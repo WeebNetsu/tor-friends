@@ -1,0 +1,48 @@
+body {
+  background-color: #222;
+  color: #fff;
+}
+
+#all-items {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+
+  .item {
+    border: 1px solid #fff;
+    padding: 1rem;
+
+    .item-link {
+      font-size: 1.2rem;
+    }
+
+    .show-details {
+      float: right;
+
+      .for-item {
+        display: none;
+      }
+    }
+
+    .details {
+      margin-top: 0.5rem;
+      //   display: none;
+      table {
+        width: 100%;
+
+        td {
+          padding-left: 1rem;
+        }
+      }
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: block;
+}

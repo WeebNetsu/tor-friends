@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+<!-- Block Begin -->
+{% block head %}
+<title>Downloads</title>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/torrent-mod.css') }}"
+/>
+{% endblock %}
+<!-- Block End -->
+
+<!-- Block Begin -->
+{% block body %}
+<div class="container">
+  <form action="#">
+    <div class="form-group">
+      <label for="full-name">Full Name:</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="The Elder Scrolls V: Skyrim"
+        id="full-name"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="display-name">Display Name:</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Skyrim"
+        id="display-name"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="magnet">Magnet Link:</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="magnet:?xt=urn:btih:5f7f8..."
+        id="magnet"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="file-size">File Size:</label>
+      <div class="form-row">
+        <div class="col">
+          <input
+            type="number"
+            class="form-control"
+            id="file-size"
+            placeholder="500"
+            required
+          />
+        </div>
+        <div class="col">
+          <select class="form-control" id="sel1">
+            <option>KB (Kilobytes)</option>
+            <option selected>MB (Megabytes)</option>
+            <option>GB (Gigabytes)</option>
+            <option>TB (Terrabytes)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>File Type:</label>
+      <div class="form-row">
+        <div class="col">
+          <select class="form-control" id="file-type-general" id="sel2">
+            <option selected>Video</option>
+            <option>Game</option>
+            <option>Application</option>
+            <option>Music</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="col">
+          <select class="form-control" id="file-type-minor">
+            <option>Video</option>
+            <option selected>Movie</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="full-name">Description:</label>
+      <textarea
+        id="description"
+        placeholder="This movie is about..."
+        class="form-control"
+        maxlength="200"
+      ></textarea>
+      <p id="word-count"><span id="count">0</span>/200</p>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+{% endblock %}
+<!-- Block End -->
+
+<!-- Block Begin -->
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/torrent-form.js') }}"></script>
+{% endblock %}
+<!-- Block End -->

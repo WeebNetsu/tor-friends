@@ -1,0 +1,17 @@
+@import "./defaults.scss";
+
+#user-details {
+  .row {
+    margin-top: 1rem;
+  }
+}
+
+#all-items {
+  border: none;
+
+  .item {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+}

@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+<!-- Block Begin -->
+{% block head %}
+<title>Username</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+<!-- Block End -->
+
+
+<!-- Block Begin -->
+{% block body %}
+<div class="container">
+  <div id="user-details">
+    <div class="row">
+      <div class="col-sm-3">Username:</div>
+      <div class="col" id="username">Netsu</div>
+      <div class="col">
+        <button type="submit" class="btn btn-outline-light btn-sm">
+          <i class="fa fa-pencil"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3">Password:</div>
+      <div class="col" id="password">******</div>
+      <div class="col">
+        <button type="submit" class="btn btn-outline-light btn-sm">
+          <i class="fa fa-pencil"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div id="all-items">
+        <h1><center>Your Torrents</center></h1>
+        <div class="item">
+          <a href="#" class="item-link">Skyrim</a>
+
+          <button class="btn btn-outline-secondary btn-sm show-details">
+            Details <i class="fa fa-caret-down"></i>
+            <span class="for-item">for:skyrim</span>
+          </button>
+
+          <div class="details hidden" id="skyrim">
+            <table class="table-dark table-hover">
+              <tr>
+                <td>Name</td>
+                <td>The Elder Scrolls V: Skyrim</td>
+              </tr>
+
+              <tr>
+                <td>Display Name</td>
+                <td>Skyrim</td>
+              </tr>
+
+              <tr>
+                <td>Magnet</td>
+                <td>http://wdsjnfenfiecn.com</td>
+              </tr>
+
+              <tr>
+                <td>Size</td>
+                <td>19GB</td>
+              </tr>
+
+              <tr>
+                <td>Type</td>
+                <td>Game</td>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Seeders</td>
+                <td>1</td>
+              </tr>
+
+              <tr>
+                <td>Edit</td>
+                <td>
+                    <a href="torrent-mod.html">
+                        <button
+                            type="submit"
+                            class="btn btn-outline-primary btn-sm"
+                        >
+                            <i class="fa fa-pencil"></i>
+                    </button>
+                    </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Remove</td>
+                <td>
+                  <button class="btn btn-outline-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="item">
+          <a href="#" class="item-link">Oblivion</a>
+
+          <button class="btn btn-outline-secondary btn-sm show-details">
+            Details <i class="fa fa-caret-down"></i>
+            <span class="for-item">for:oblivion</span>
+          </button>
+
+          <div class="details hidden" id="oblivion">
+            <table class="table-dark table-hover">
+              <tr>
+                <td>Name</td>
+                <td>The Elder Scrolls IV: Oblivion</td>
+              </tr>
+
+              <tr>
+                <td>Size</td>
+                <td>8GB</td>
+              </tr>
+
+              <tr>
+                <td>Type</td>
+                <td>Game</td>
+              </tr>
+
+              <tr>
+                <td>Seeders</td>
+                <td>5</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+<!-- Block End -->

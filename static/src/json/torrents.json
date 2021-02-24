@@ -1,22 +1,50 @@
 {
-	"Choosing your linux distro": {
-		"user_id": 1,
-		"full_name": "Choosing your linux distro by hsdfiso",
-		"magnet": "magnet:?xt=urn:btih:34f2f04950a9528b0ab5feb440302daaf30bb074&dn=Choosing%20your%20linux%20distro.mp4&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.istole.it%3A80%2Fannounce",
-		"size": 108,
-		"size_type": "MB",
-		"type": "video",
-		"minor_type": "video",
-		"desc": "Just a test"
-	},
-	"Test": {
-		"user_id": 1,
-		"full_name": "one cool test",
-		"magnet": "magnet:?xt=urn:btih:34f2f04950a9528b0ab5feb440302daaf30bb074&dn=Choosing%20your%20linux%20distro.mp4&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.istole.it%3A80%2Fannounce",
-		"size": 108,
-		"size_type": "GB",
-		"type": "Game",
-		"minor_type": "Windows",
-		"desc": "Just another test"
-	}
+    "1": {
+        "user_id": 1,
+        "full_name": "Choosing your linux distro by hsdfiso",
+        "name": "Choosing your linux distro",
+        "magnet": "magnet:?xt=urn:btih:34f2f04950a9528b0ab5feb440302daaf30bb074&dn=Choosing%20your%20linux%20distro.mp4&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.istole.it%3A80%2Fannounce",
+        "size": 108,
+        "size_type": "MB",
+        "type": "video",
+        "minor_type": "video",
+        "desc": "Just a test",
+        "user": "netsu"
+    },
+    "2": {
+        "user_id": 2,
+        "full_name": "one cool test",
+        "name": "Test",
+        "magnet": "magnet:?xt=urn:btih:34f2f04950a9528b0ab5feb440302daaf30bb074&dn=Choosing%20your%20linux%20distro.mp4&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.istole.it%3A80%2Fannounce",
+        "size": 108,
+        "size_type": "GB",
+        "type": "Game",
+        "minor_type": "Windows",
+        "desc": "Just another test",
+        "user": "user"
+    },
+    "3": {
+        "user_id": 1,
+        "full_name": "Fable: Lost Chapters",
+        "name": "Fable",
+        "magnet": "magnet-s",
+        "size": "2",
+        "size_type": "GB",
+        "type": "Game",
+        "minor_type": "Linux",
+        "desc": "",
+        "user": "netsu"
+    },
+    "4": {
+        "user_id": 1,
+        "full_name": "The Elder Scrolls IV: Oblivion",
+        "name": "Oblivion",
+        "magnet": "magnet:?somecoolcrapandstuff",
+        "size": "9",
+        "size_type": "GB",
+        "type": "Game",
+        "minor_type": "Windows",
+        "desc": "Cool game, very yes, VERY BIGGG",
+        "user": "netsu"
+    }
 }

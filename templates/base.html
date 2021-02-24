@@ -80,8 +80,22 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="/torrent/add"
+            <a class="nav-link" href="/torrent"
               ><i class="fa fa-upload"></i> Add Torrent</a
+            >
+          </li>
+
+          {% if mod %}
+          <li class="nav-item">
+            <a class="nav-link" href="/user/add"
+              ><i class="fa fa-address-book"></i> Add User</a
+            >
+          </li>
+          {% endif %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="/logout"
+              ><i class="fa fa-sign-out"></i> Logout</a
             >
           </li>
         </ul>

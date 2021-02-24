@@ -2,7 +2,7 @@
 
 <!-- Block Begin -->
 {% block head %}
-<title>Downloads</title>
+<title>Tor-Friends</title>
 
 <link
   rel="stylesheet"
@@ -17,18 +17,102 @@
   <div class="row">
     <div class="col-md-12">
       <main id="all-items">
+        {% for det in session %}
+        <!--  -->
         {% for key, item in torrents.items() %}
+        <!--  -->
+        {% if det["id"] == item["user_id"] %}
         <div class="item">
-          <a href="{{ item['magnet'] }}" class="item-link">{{ key }}</a>
+          <a href="{{ item['magnet'] }}" class="item-link"
+            >{{ item['name'] }}</a
+          >
 
           <button class="btn btn-outline-secondary btn-sm show-details">
             Details <i class="fa fa-caret-down"></i>
             <span class="for-item"
-              >for:{{ key.lower().replace(" ", "_") }}</span
+              >for:{{ item['name'].lower().replace(" ", "_") }}</span
             >
           </button>
 
-          <div class="details hidden" id="{{ key.lower().replace(' ', '_') }}">
+          <div
+            class="details hidden"
+            id="{{ item['name'].lower().replace(' ', '_') }}"
+          >
+            <table class="table-dark table-hover">
+              <tr>
+                <td>Name</td>
+                <td>{{ item["full_name"] }}</td>
+              </tr>
+
+              <tr>
+                <td>Magnet</td>
+                <td>
+                  {% for i in range(30) %}{{ item["magnet"][i] }}{% endfor %}...
+                </td>
+              </tr>
+
+              <tr>
+                <td>Size</td>
+                <td>{{ item["size"] }}{{ item["size_type"] }}</td>
+              </tr>
+
+              <tr>
+                <td>Type</td>
+                <td>{{ item["type"] }} -> {{ item["minor_type"] }}</td>
+              </tr>
+
+              <tr>
+                <td>Description</td>
+                <td>{{ item["desc"] }}</td>
+              </tr>
+
+              <tr>
+                <td>Owner</td>
+                <td>You</td>
+              </tr>
+
+              <tr>
+                <td>Edit</td>
+                <td>
+                  <a href="/torrent/{{ key }}">
+                    <button
+                      type="submit"
+                      class="btn btn-outline-primary btn-sm"
+                    >
+                      <i class="fa fa-pencil"></i>
+                    </button>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Remove</td>
+                <td>
+                  <button class="btn btn-outline-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        {% else %}
+        <div class="item">
+          <a href="{{ item['magnet'] }}" class="item-link"
+            >{{ item['name'] }}</a
+          >
+
+          <button class="btn btn-outline-secondary btn-sm show-details">
+            Details <i class="fa fa-caret-down"></i>
+            <span class="for-item"
+              >for:{{ item['name'].lower().replace(" ", "_") }}</span
+            >
+          </button>
+
+          <div
+            class="details hidden"
+            id="{{ item['name'].lower().replace(' ', '_') }}"
+          >
             <table class="table-dark table-hover">
               <tr>
                 <td>Name</td>
@@ -49,11 +133,15 @@
                 <td>Description</td>
                 <td>{{ item["desc"] }}</td>
               </tr>
+
+              <tr>
+                <td>Owner</td>
+                <td>{{ item["user"] }}</td>
+              </tr>
             </table>
           </div>
         </div>
-
-        {% endfor %}
+        {% endif %} {% endfor %} {% endfor %}
       </main>
     </div>
   </div>

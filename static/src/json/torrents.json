@@ -24,11 +24,11 @@
         "user": "user2"
     },
     "9": {
-        "user_id": 5,
+        "user_id": 6,
         "full_name": "The Elder Scrolls V: Skyrim",
         "name": "Skyrim",
         "magnet": "magnet:?somecoolcrapandstuff",
-        "size": "20",
+        "size": "19",
         "size_type": "GB",
         "type": "Game",
         "minor_type": "Windows",

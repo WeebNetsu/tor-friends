@@ -42,6 +42,14 @@ session = {
 # NOTE: all render_templates shoudl include session EXCEPT for login
 
 
+@app.route("/rules")
+def rules():
+    if session["id"] != 0:
+        return render_template("rules.html", session=[session])
+
+    return redirect("/login")
+
+
 @app.route("/admin/user/mod/<string:category>")
 def edit_user_details(category):
     if session["id"] != 0 and session["mod"]:
@@ -262,6 +270,41 @@ def logout():
     return redirect("/login")
 
 
+""" 
+@app.route("/search", methods=["GET", "POST"])
+def search_torrents():
+    if request.method == "POST":
+        search = request.form['search']
+        found_word = []
+        found_some = []
+        for key, value in torrents.items():
+            for _, i in value.items():
+                if search == i:
+                    found_word.append(key)
+                    continue
+
+                if search in i:
+                    found_some.append(key)
+
+        # remove duplicates
+        found_word = list(dict.fromkeys(found_word))
+        found_some = list(dict.fromkeys(found_some))
+
+        for i in len(found_some):
+            if found_some[i] in found_word:
+                found_some.remove(found_some[i])
+
+        results = []
+        for i in found_word:
+            results.append(torrents[str(i)])
+
+        for i in found_some:
+            results.append(torrents[str(i)])
+
+        return render_template(f"index.html?search={search}", torrents=results, session=[session], rsc=remove_special_characters, search=True) 
+"""
+
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     rev_torrents = reverse_dict(torrents)
@@ -448,11 +491,12 @@ def edit_torrent(tor_id):
     if session["id"] != 0:
         if request.method == "POST":
             user = torrents[str(tor_id)]['user']
+            user_id = torrents[str(tor_id)]['user_id']
 
             torrents.pop(str(tor_id))
 
             torrents[str(int(list(torrents.keys())[-1]) + 1)] = {
-                "user_id": session["id"],
+                "user_id": user_id,
                 "full_name": request.form["full-name"],
                 "name": request.form["display-name"],
                 "magnet": request.form["magnet"],

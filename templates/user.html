@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 
 <!-- Block Begin -->
-{% block head %}
-<title>Username</title>
+{% block head %} {% for det in session %}
+<title>{{ det["username"] }}</title>
+<!-- Block Begin -->
+{% endfor %}
+<!-- Block End -->
 
 <link
   rel="stylesheet"
@@ -15,8 +18,6 @@
 {% block body %}
 <div class="container">
   {% for det in session %}
-  <!-- For End -->
-
   <div id="user-details">
     <div class="row">
       <div class="col-sm-3">Username:</div>

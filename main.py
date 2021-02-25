@@ -39,9 +39,110 @@ session = {
     "username": None,  # "netsu",  # None
     "mod": False  # false
 }
-
-
 # NOTE: all render_templates shoudl include session EXCEPT for login
+
+
+@app.route("/admin/user/mod/<string:category>")
+def edit_user_details(category):
+    if session["id"] != 0 and session["mod"]:
+        if request.args.get('wrongpass'):
+            return render_template("admin_mod_user.html", session=[session], category=category, wrongpass=True)
+
+        if request.args.get('notfound'):
+            return render_template("admin_mod_user.html", session=[session], category=category, notfound=True)
+
+        if request.args.get('ismod'):
+            return render_template("admin_mod_user.html", session=[session], category=category, ismod=True)
+
+        if request.args.get('usernameexist'):
+            return render_template("admin_mod_user.html", session=[session], category=category, usernameexist=True)
+
+        if request.args.get('modded'):
+            return render_template("admin_mod_user.html", session=[session], category=category, modded=True)
+
+        return render_template("admin_mod_user.html", session=[session], category=category)
+
+    return redirect("/")
+
+
+@app.route("/admin/mod/user/set/<string:category>", methods=["GET", "POST"])
+def set_user_details(category):
+    if session["id"] != 0 and session["mod"]:
+        if request.method == "POST":
+            admin_password = request.form["admin_password"]
+
+            admin = User.query.filter_by(username=session["username"]).all()[0]
+            if admin.password != encrypt_string(admin_password):
+                return redirect(f"/admin/user/mod/{category}?wrongpass=True")
+
+            username = request.form["username"]
+            try:
+                user = User.query.filter_by(username=username).all()[0]
+            except IndexError:  # if user not found
+                return redirect(f"/admin/user/mod/{category}?notfound=True")
+            else:
+                if category == "username":
+                    new_username = request.form["new_username"]
+                    try:
+                        _ = User.query.filter_by(
+                            username=new_username).all()[0]
+                    except IndexError:  # if the username doesn't already exist
+                        if user.mod:
+                            if not admin.admin:
+                                return redirect(f"/admin/user/mod/{category}?ismod=True")
+
+                        # we already know the user exists, so no "or_404" needed
+                        user = User.query.get(user.id)
+                        user.username = new_username
+                        db.session.commit()
+
+                        for key, val in torrents.items():
+                            if(val["user"] == username):
+                                val['user'] = new_username
+
+                        write_torrent_json(torrents)
+
+                        return redirect(f"/admin/user/mod/{category}?modded=True")
+                    else:
+                        return redirect(f"/admin/user/mod/{category}?usernameexist=True")
+                elif category == "password":
+                    new_password = request.form["new_password"]
+                    if user.mod:
+                        if not admin.admin:
+                            return redirect(f"/admin/user/mod/{category}?ismod=True")
+
+                    # we already know the user exists, so no "or_404" needed
+                    user = User.query.get(user.id)
+                    user.password = encrypt_string(new_password)
+                    db.session.commit()
+
+                    return redirect(f"/admin/user/mod/{category}?modded=True")
+                elif category == "chmod":
+                    mod = request.form['mod_lvl']
+                    if user.mod:
+                        if not admin.admin:
+                            return redirect(f"/admin/user/mod/{category}?ismod=True")
+
+                    # we already know the user exists, so no "or_404" needed
+                    user = User.query.get(user.id)
+                    user.mod = mod
+                    db.session.commit()
+
+                    return redirect(f"/admin/user/mod/{category}?modded=True")
+                else:
+                    return redirect("/admin")
+
+    return redirect("/")
+
+
+@app.route("/admin")
+def admin():
+    if session["id"] != 0 and session["mod"]:
+        return render_template("admin.html", session=[session])
+
+    return redirect("/")
+
+
 @app.route("/admin/user/delete")
 def delete_user():
     if session["id"] != 0 and session["mod"]:
@@ -82,13 +183,24 @@ def remove_user():
                     if not admin.admin:
                         return redirect("/admin/user/delete?ismod=True")
 
-                    # we already know the user exists, so no "or_404" needed
-                    user = User.query.get(user.id)
-                    db.session.delete(user)
-                    db.session.commit()
-                    return redirect("/admin/user/delete?userdeleted=True")
+                # remove all user torrents
+                x = []
+                for key, val in torrents.items():
+                    if val["user"] == user.username:
+                        x.append(key)
 
-    return redirect("/login")
+                for key in x:
+                    torrents.pop(str(key))
+
+                # we already know the user exists, so no "or_404" needed
+                user = User.query.get(user.id)
+                db.session.delete(user)
+                db.session.commit()
+
+                write_torrent_json(torrents)
+                return redirect("/admin/user/delete?userdeleted=True")
+
+    return redirect("/")
 
 
 @app.route("/admin/user/add")
@@ -169,6 +281,8 @@ def index():
             session["mod"] = user.mod
             session["username"] = user.username
             return render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters)
+        else:
+            return redirect("/login?auth=fail")
 
     if session["id"] != 0:
         if request.args.get('del'):
@@ -333,9 +447,11 @@ def add_torrent():
 def edit_torrent(tor_id):
     if session["id"] != 0:
         if request.method == "POST":
+            user = torrents[str(tor_id)]['user']
+
             torrents.pop(str(tor_id))
 
-            torrents[str(len(torrents) + 1)] = {
+            torrents[str(int(list(torrents.keys())[-1]) + 1)] = {
                 "user_id": session["id"],
                 "full_name": request.form["full-name"],
                 "name": request.form["display-name"],
@@ -345,10 +461,10 @@ def edit_torrent(tor_id):
                 "type": request.form["file-type"],
                 "minor_type": request.form["file-type-minor"],
                 "desc": request.form["desc"],
-                "user": session["username"]
+                "user": user
             }
 
-            write_torrent_json()
+            write_torrent_json(torrents)
 
             return redirect("/")
         return redirect("/torrent")

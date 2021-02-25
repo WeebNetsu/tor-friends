@@ -1,0 +1,19 @@
+@import "./defaults.scss";
+
+.row {
+  .btn-item {
+    margin-top: 1rem;
+
+    .send-link {
+      // color: #fff;
+
+      &:hover {
+        background-color: #0000;
+      }
+    }
+  }
+
+  // .send-link-btn {
+  // color: #fff;
+  // }
+}

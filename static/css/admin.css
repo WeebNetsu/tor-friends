@@ -44,4 +44,11 @@ body {
   text-align: center;
 }
 
-/*# sourceMappingURL=torrent-mod.css.map */
+.row .btn-item {
+  margin-top: 1rem;
+}
+.row .btn-item .send-link:hover {
+  background-color: #0000;
+}
+
+/*# sourceMappingURL=admin.css.map */

@@ -48,7 +48,7 @@
   </head>
   <body>
     {% if not no_nav %}
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
       <!-- Brand -->
       <a class="navbar-brand" href="/">Tor-Friends</a>
       <form class="form-inline" action="/action_page.php">
@@ -87,23 +87,10 @@
           {% for stat in session %}
           <!--  -->
           {% if stat["mod"] %}
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbardrop"
-              data-toggle="dropdown"
+          <li class="nav-item">
+            <a class="nav-link" href="/admin"
+              ><i class="fa fa-unlock-alt"></i> Admin</a
             >
-              <i class="fa fa-unlock-alt"></i> Admin
-            </a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="/admin/user/add"
-                ><i class="fa fa-user-plus"></i> Add User</a
-              >
-              <a class="dropdown-item" href="/admin/user/delete"
-                ><i class="fa fa-user-times"></i> Remove User</a
-              >
-            </div>
           </li>
           {% endif %}
           <!--  -->
@@ -113,6 +100,12 @@
           <li class="nav-item">
             <a class="nav-link" href="/logout"
               ><i class="fa fa-sign-out"></i> Logout</a
+            >
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/rules"
+              ><i class="fa fa-book"></i> Rules</a
             >
           </li>
         </ul>

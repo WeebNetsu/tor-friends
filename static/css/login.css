@@ -40,6 +40,10 @@ body {
   display: block;
 }
 
+.center {
+  text-align: center;
+}
+
 form {
   position: absolute;
   top: 50%;

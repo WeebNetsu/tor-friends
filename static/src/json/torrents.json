@@ -1,16 +1,4 @@
 {
-    "4": {
-        "user_id": 1,
-        "full_name": "The Elder Scrolls IV: Oblivion",
-        "name": "Oblivion",
-        "magnet": "magnet:?somecoolcrapandstuff",
-        "size": "9",
-        "size_type": "GB",
-        "type": "Game",
-        "minor_type": "Windows",
-        "desc": "Cool game, very yes, VERY BIGGG",
-        "user": "netsu"
-    },
     "5": {
         "user_id": 1,
         "full_name": "The Elder Scrolls III: Morrowind",
@@ -23,24 +11,24 @@
         "desc": "Cool old wannabe skyrim game. definately do play since it is pretty fun. just open filelocation>bin>app then delete the folder called mod and rename the file called jack to your username :)",
         "user": "netsu"
     },
-    "6": {
-        "user_id": 2,
-        "full_name": "Jack The Slayer 2",
-        "name": "Jack!!",
-        "magnet": "magnet:?somerandomcrap&sdsjndsksddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-        "size": "1",
-        "size_type": "TB",
-        "type": "Video",
-        "minor_type": "Movie",
-        "desc": "movie pretty cool",
-        "user": "user"
+    "8": {
+        "user_id": 6,
+        "full_name": "Fable: Lost Chapters",
+        "name": "Fable",
+        "magnet": "magnet:?somecoolcrapandstuff",
+        "size": "2",
+        "size_type": "GB",
+        "type": "Game",
+        "minor_type": "Windows",
+        "desc": "fable is cool",
+        "user": "user2"
     },
-    "7": {
-        "user_id": 1,
+    "9": {
+        "user_id": 5,
         "full_name": "The Elder Scrolls V: Skyrim",
         "name": "Skyrim",
         "magnet": "magnet:?somecoolcrapandstuff",
-        "size": "19",
+        "size": "20",
         "size_type": "GB",
         "type": "Game",
         "minor_type": "Windows",

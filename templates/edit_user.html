@@ -149,17 +149,9 @@
 
 {% if no_match_pass %}
 <script>
-  alert("Passwords do not match");
+  alert("Passwords do not match.");
 </script>
 {% endif %}
-
-<script>
-  $(document).on("keypress", function (e) {
-    if (e.which == 13) {
-      confirmed();
-    }
-  });
-</script>
 <!--  -->
 {% endblock %}
 <!-- Block End -->

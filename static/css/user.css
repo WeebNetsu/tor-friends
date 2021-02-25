@@ -40,6 +40,10 @@ body {
   display: block;
 }
 
+.center {
+  text-align: center;
+}
+
 #user-details .row {
   margin-top: 1rem;
 }

@@ -22,9 +22,11 @@
       <div class="col-sm-3">Username:</div>
       <div class="col">{{ det["username"] }}</div>
       <div class="col">
-        <button class="btn btn-outline-light btn-sm">
-          <i class="fa fa-pencil"></i>
-        </button>
+        <a href="/user/edit/username">
+          <button class="btn btn-outline-light btn-sm">
+            <i class="fa fa-pencil"></i>
+          </button>
+        </a>
       </div>
     </div>
 
@@ -32,9 +34,11 @@
       <div class="col-sm-3">Password:</div>
       <div class="col" id="password">******</div>
       <div class="col">
-        <button class="btn btn-outline-light btn-sm">
-          <i class="fa fa-pencil"></i>
-        </button>
+        <a href="/user/edit/password">
+          <button class="btn btn-outline-light btn-sm">
+            <i class="fa fa-pencil"></i>
+          </button>
+        </a>
       </div>
     </div>
   </div>
@@ -52,15 +56,10 @@
 
           <button class="btn btn-outline-secondary btn-sm show-details">
             Details <i class="fa fa-caret-down"></i>
-            <span class="for-item"
-              >for:{{ item['name'].lower().replace(" ", "_") }}</span
-            >
+            <span class="for-item">for:{{ rsc(item['name']).lower() }}</span>
           </button>
 
-          <div
-            class="details hidden"
-            id="{{ item['name'].lower().replace(' ', '_') }}"
-          >
+          <div class="details hidden" id="{{ rsc(item['name']).lower() }}">
             <table class="table-dark table-hover">
               <tr>
                 <td>Name</td>
@@ -120,5 +119,12 @@
   </div>
   {% endfor %}
 </div>
+
+{% if newpass %}
+<script>
+  alert("Password Changed Successfully");
+</script>
+{% endif %}
+<!--  -->
 {% endblock %}
 <!-- Block End -->

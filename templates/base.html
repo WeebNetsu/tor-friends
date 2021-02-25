@@ -84,14 +84,31 @@
               ><i class="fa fa-upload"></i> Add Torrent</a
             >
           </li>
-
-          {% if mod %}
-          <li class="nav-item">
-            <a class="nav-link" href="/user/add"
-              ><i class="fa fa-address-book"></i> Add User</a
+          {% for stat in session %}
+          <!--  -->
+          {% if stat["mod"] %}
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbardrop"
+              data-toggle="dropdown"
             >
+              <i class="fa fa-unlock-alt"></i> Admin
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="/admin/user/add"
+                ><i class="fa fa-user-plus"></i> Add User</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="fa fa-user-times"></i> Remove User</a
+              >
+            </div>
           </li>
           {% endif %}
+          <!--  -->
+          {% endfor %}
+          <!-- For End -->
 
           <li class="nav-item">
             <a class="nav-link" href="/logout"

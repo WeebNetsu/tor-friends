@@ -21,7 +21,7 @@
         <!--  -->
         {% for key, item in torrents.items() %}
         <!--  -->
-        {% if det["id"] == item["user_id"] %}
+        {% if det["id"] == item["user_id"] or det["mod"] %}
         <div class="item">
           <a href="{{ item['magnet'] }}" class="item-link"
             >{{ item['name'] }}</a
@@ -29,15 +29,10 @@
 
           <button class="btn btn-outline-secondary btn-sm show-details">
             Details <i class="fa fa-caret-down"></i>
-            <span class="for-item"
-              >for:{{ item['name'].lower().replace(" ", "_") }}</span
-            >
+            <span class="for-item">for:{{ rsc(item['name']).lower() }}</span>
           </button>
 
-          <div
-            class="details hidden"
-            id="{{ item['name'].lower().replace(' ', '_') }}"
-          >
+          <div class="details hidden" id="{{ rsc(item['name']).lower() }}">
             <table class="table-dark table-hover">
               <tr>
                 <td>Name</td>
@@ -68,7 +63,7 @@
 
               <tr>
                 <td>Owner</td>
-                <td>You</td>
+                <td>{{ item["user"] }}</td>
               </tr>
 
               <tr>
@@ -88,9 +83,11 @@
               <tr>
                 <td>Remove</td>
                 <td>
-                  <button class="btn btn-outline-danger btn-sm">
-                    <i class="fa fa-trash"></i>
-                  </button>
+                  <a href="/torrent/del/{{ key }}">
+                    <button class="btn btn-outline-danger btn-sm">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </a>
                 </td>
               </tr>
             </table>
@@ -146,5 +143,10 @@
     </div>
   </div>
 </div>
-{% endblock %}
+
+{% if tor_deleted %}
+<script>
+  alert("Torrent Deleted");
+</script>
+{% endif %} {% endblock %}
 <!-- Block End -->

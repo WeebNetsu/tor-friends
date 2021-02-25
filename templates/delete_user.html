@@ -3,7 +3,7 @@
 <!-- Block Begin -->
 {% block head %}
 <!--  -->
-<title>Add User</title>
+<title>Delete User</title>
 
 <link
   rel="stylesheet"
@@ -15,15 +15,15 @@
 <!-- Block Begin -->
 {% block body %}
 <div class="container">
-  <h1>Add New User</h1>
+  <h1>Remove User</h1>
 
-  <form action="/admin/user/added" method="post">
+  <form action="/admin/user/deleted" method="post">
     <div class="form-group">
       <label for="username">Username:</label>
       <input
         type="text"
         class="form-control"
-        placeholder="Any random username will do. They can change it."
+        placeholder="Enter an existing username"
         minlength="4"
         required
         id="username"
@@ -34,46 +34,46 @@
     </div>
 
     <div class="form-group">
-      <label for="password">Password</label>
+      <label for="password">Your Password</label>
       <input
         type="password"
         class="form-control"
         id="password"
-        name="password"
+        name="admin_password"
         minlength="8"
         required
-        placeholder="Easy password should do. They can change it later."
+        placeholder="This is to confirm the delete."
       />
     </div>
 
-    <div class="form-check">
-      <label class="form-check-label">
-        <input
-          type="checkbox"
-          class="form-check-input"
-          name="is_mod"
-          value="1"
-        />
-        Mod
-      </label>
-    </div>
     <br />
-    <button type="submit" class="btn btn-outline-success">Add User</button>
+    <button type="submit" class="btn btn-outline-danger">Remove User</button>
   </form>
 </div>
 
-{% if exsists %}
+{% if notfound %}
 <script>
-  alert("Username already exists");
+  alert("User not found");
 </script>
 {% endif %}
 <!--  -->
-{% if useradded %}
+{% if userdeleted %}
 <script>
-  alert("User added successfully");
+  alert("User successfully deleted");
 </script>
 {% endif %}
-
+<!--  -->
+{% if ismod %}
+<script>
+  alert("Cannot remove other mods.");
+</script>
+{% endif %}
+<!--  -->
+{% if wrongpass %}
+<script>
+  alert("Password is incorrect");
+</script>
+{% endif %}
 <!--  -->
 {% endblock %}
 <!-- Block End -->

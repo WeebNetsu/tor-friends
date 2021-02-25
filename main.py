@@ -19,6 +19,8 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.Text, nullable=False)
     mod = db.Column(db.Integer, nullable=False, default=0)  # 0 = false
+    # admins are the only people who can remove mods
+    admin = db.Column(db.Integer, nullable=False, default=0)
 
     # when you say BlogPost.query.all() the below will be returned
     def __repr__(self):
@@ -39,16 +41,66 @@ session = {
 }
 
 
+# NOTE: all render_templates shoudl include session EXCEPT for login
+@app.route("/admin/user/delete")
+def delete_user():
+    if session["id"] != 0 and session["mod"]:
+        if request.args.get('notfound'):
+            return render_template("delete_user.html", notfound=True, session=[session])
+
+        if request.args.get('userdeleted'):
+            return render_template("delete_user.html", userdeleted=True, session=[session])
+
+        if request.args.get('ismod'):
+            return render_template("delete_user.html", ismod=True, session=[session])
+
+        if request.args.get('wrongpass'):
+            return render_template("delete_user.html", wrongpass=True, session=[session])
+
+        return render_template("delete_user.html", session=[session])
+    return redirect("/")
+
+
+@app.route("/admin/user/deleted", methods=["GET", "POST"])
+def remove_user():
+    if session["id"] != 0 and session["mod"]:
+        if request.method == "POST":  # if they logged in
+            username = request.form["username"]
+            admin_password = request.form["admin_password"]
+
+            admin = User.query.filter_by(username=session["username"]).all()[0]
+            if admin.password != encrypt_string(admin_password):
+                return redirect("/admin/user/delete?wrongpass=True")
+
+            try:
+                user = User.query.filter_by(username=username).all()[
+                    0]
+            except IndexError:  # if user not found
+                return redirect("/admin/user/delete?notfound=True")
+            else:
+                if user.mod:
+                    if not admin.admin:
+                        return redirect("/admin/user/delete?ismod=True")
+
+                    # we already know the user exists, so no "or_404" needed
+                    user = User.query.get(user.id)
+                    db.session.delete(user)
+                    db.session.commit()
+                    return redirect("/admin/user/delete?userdeleted=True")
+
+    return redirect("/login")
+
+
 @app.route("/admin/user/add")
 def add_user():
     if session["id"] != 0 and session["mod"]:
         if request.args.get('added'):
-            return render_template("add_user.html", useradded=True)
+            return render_template("add_user.html", useradded=True, session=[session])
 
         if request.args.get('usernameexist'):
-            return render_template("add_user.html", exsists=True)
+            return render_template("add_user.html", exsists=True, session=[session])
 
-        return render_template("add_user.html")
+        return render_template("add_user.html", session=[session])
     return redirect("/")
 
 
@@ -224,16 +276,16 @@ def change_password():
 @app.route("/torrent")
 def torrent():
     if session["id"] != 0:
-        return render_template("torrent-mod.html", add_torrent=True)
+        return render_template("torrent-mod.html", add_torrent=True, session=[session])
         if request.args.get('edit') == "true":
-            return render_template("torrent-mod.html")
+            return render_template("torrent-mod.html", session=[session])
     return redirect("/login")
 
 
 @app.route("/torrent/<int:tor_id>")
 def torrent_editing(tor_id):
     if session["id"] != 0:
-        return render_template("torrent-mod.html", data=torrents[str(tor_id)], tor_id=tor_id)
+        return render_template("torrent-mod.html", data=torrents[str(tor_id)], tor_id=tor_id, session=[session])
         # if request.args.get('edit') == "true":
         # return render_template("torrent-mod.html")
     return redirect("/login")

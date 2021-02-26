@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 # save in this folder
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://bcc27f206e1efd:6cb2d273@us-cdbr-east-03.cleardb.com/heroku_17d66c25a2c0a2d?reconnect=true"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://bcc27f206e1efd:6cb2d273@us-cdbr-east-03.cleardb.com/heroku_17d66c25a2c0a2d"
 db = SQLAlchemy(app)  # link database and app
 
 

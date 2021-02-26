@@ -1,3 +1,5 @@
+# push to heroku: https://www.youtube.com/watch?v=Li0Abz-KT78
+
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from collections import OrderedDict
@@ -11,7 +13,7 @@ app = Flask(__name__)
 
 # save in this folder
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://netsu:root@localhost/torfriends"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://bcc27f206e1efd:6cb2d273@us-cdbr-east-03.cleardb.com/heroku_17d66c25a2c0a2d?reconnect=true"
 db = SQLAlchemy(app)  # link database and app
 
 

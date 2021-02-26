@@ -10,17 +10,18 @@ from auxillary import *
 app = Flask(__name__)
 
 # save in this folder
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://netsu:root@localhost/torfriends"
 db = SQLAlchemy(app)  # link database and app
 
 
-class User(db.Model):
+class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.Text, nullable=False)
-    mod = db.Column(db.Integer, nullable=False, default=0)  # 0 = false
+    mod_ = db.Column(db.Integer, nullable=False, default=0)  # 0 = false
     # admins are the only people who can remove mods
-    admin = db.Column(db.Integer, nullable=False, default=0)
+    admin_ = db.Column(db.Integer, nullable=False, default=0)
 
     # when you say BlogPost.query.all() the below will be returned
     def __repr__(self):
@@ -79,28 +80,29 @@ def set_user_details(category):
         if request.method == "POST":
             admin_password = request.form["admin_password"]
 
-            admin = User.query.filter_by(username=session["username"]).all()[0]
+            admin = Users.query.filter_by(
+                username=session["username"]).all()[0]
             if admin.password != encrypt_string(admin_password):
                 return redirect(f"/admin/user/mod/{category}?wrongpass=True")
 
             username = request.form["username"]
             try:
-                user = User.query.filter_by(username=username).all()[0]
+                user = Users.query.filter_by(username=username).all()[0]
             except IndexError:  # if user not found
                 return redirect(f"/admin/user/mod/{category}?notfound=True")
             else:
                 if category == "username":
                     new_username = request.form["new_username"]
                     try:
-                        _ = User.query.filter_by(
+                        _ = Users.query.filter_by(
                             username=new_username).all()[0]
                     except IndexError:  # if the username doesn't already exist
-                        if user.mod:
-                            if not admin.admin:
+                        if user.mod_:
+                            if not admin.admin_:
                                 return redirect(f"/admin/user/mod/{category}?ismod=True")
 
                         # we already know the user exists, so no "or_404" needed
-                        user = User.query.get(user.id)
+                        user = Users.query.get(user.id)
                         user.username = new_username
                         db.session.commit()
 
@@ -115,25 +117,25 @@ def set_user_details(category):
                         return redirect(f"/admin/user/mod/{category}?usernameexist=True")
                 elif category == "password":
                     new_password = request.form["new_password"]
-                    if user.mod:
-                        if not admin.admin:
+                    if user.mod_:
+                        if not admin.admin_:
                             return redirect(f"/admin/user/mod/{category}?ismod=True")
 
                     # we already know the user exists, so no "or_404" needed
-                    user = User.query.get(user.id)
+                    user = Users.query.get(user.id)
                     user.password = encrypt_string(new_password)
                     db.session.commit()
 
                     return redirect(f"/admin/user/mod/{category}?modded=True")
                 elif category == "chmod":
                     mod = request.form['mod_lvl']
-                    if user.mod:
-                        if not admin.admin:
+                    if user.mod_:
+                        if not admin.admin_:
                             return redirect(f"/admin/user/mod/{category}?ismod=True")
 
                     # we already know the user exists, so no "or_404" needed
-                    user = User.query.get(user.id)
-                    user.mod = mod
+                    user = Users.query.get(user.id)
+                    user.mod_ = mod
                     db.session.commit()
 
                     return redirect(f"/admin/user/mod/{category}?modded=True")
@@ -177,18 +179,19 @@ def remove_user():
             username = request.form["username"]
             admin_password = request.form["admin_password"]
 
-            admin = User.query.filter_by(username=session["username"]).all()[0]
+            admin = Users.query.filter_by(
+                username=session["username"]).all()[0]
             if admin.password != encrypt_string(admin_password):
                 return redirect("/admin/user/delete?wrongpass=True")
 
             try:
-                user = User.query.filter_by(username=username).all()[
+                user = Users.query.filter_by(username=username).all()[
                     0]
             except IndexError:  # if user not found
                 return redirect("/admin/user/delete?notfound=True")
             else:
-                if user.mod:
-                    if not admin.admin:
+                if user.mod_:
+                    if not admin.admin_:
                         return redirect("/admin/user/delete?ismod=True")
 
                 # remove all user torrents
@@ -201,7 +204,7 @@ def remove_user():
                     torrents.pop(str(key))
 
                 # we already know the user exists, so no "or_404" needed
-                user = User.query.get(user.id)
+                user = Users.query.get(user.id)
                 db.session.delete(user)
                 db.session.commit()
 
@@ -237,12 +240,12 @@ def create_user():
 
             try:
                 # this also checks if the user exists, we get an index error if they dont
-                user = User.query.filter_by(username=username).all()[
+                user = Users.query.filter_by(username=username).all()[
                     0]  # [0] so we don't get a list returned
             except IndexError:  # if user does not exist
                 # insert data into database
-                new_user = User(username=username,
-                                password=encrypt_string(password), mod=is_mod)
+                new_user = Users(username=username,
+                                 password=encrypt_string(password), mod_=is_mod)
                 db.session.add(new_user)  # adds content to database
                 db.session.commit()  # save all changes to database
 
@@ -314,14 +317,14 @@ def index():
         password = request.form["pwd"]
         try:
             # this also checks if the user exists, we get an index error if they dont
-            user = User.query.filter_by(username=username).all()[
+            user = Users.query.filter_by(username=username).all()[
                 0]  # [0] so we don't get a list returned
         except IndexError:
             return redirect("/login?auth=fail")
 
         if user.password == encrypt_string(password):
             session["id"] = user.id
-            session["mod"] = user.mod
+            session["mod"] = user.mod_
             session["username"] = user.username
             return render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters)
         else:
@@ -369,12 +372,12 @@ def change_username():
         if request.method == "POST":
             username = request.form["username"]
             password = request.form["password"]
-            name = User.query.filter_by(username=username).all()
+            name = Users.query.filter_by(username=username).all()
 
             if name:  # username already exists
                 return redirect("/user/edit/username?found=True")
 
-            user = User.query.get_or_404(session["id"])
+            user = Users.query.get_or_404(session["id"])
             if user.password == encrypt_string(password):
                 user.username = username
                 db.session.commit()  # save all changes to database
@@ -418,7 +421,7 @@ def change_password():
             if not new_password == con_password:
                 return redirect("/user/edit/password?cpass=True")
 
-            user = User.query.get_or_404(session["id"])
+            user = Users.query.get_or_404(session["id"])
             if user.password == encrypt_string(old_password):
                 user.password = encrypt_string(new_password)
                 db.session.commit()  # save all changes to database
@@ -451,7 +454,7 @@ def torrent_editing(tor_id):
 @app.route("/torrent/del/<int:tor_id>")
 def torrent_deleting(tor_id):
     if session["id"] != 0:
-        if torrents[str(tor_id)]["user_id"] == session["id"] or session["mod"]:
+        if torrents[str(tor_id)]["user"] == session["username"] or session["mod"]:
             torrents.pop(str(tor_id))
 
             write_torrent_json(torrents)
@@ -467,7 +470,6 @@ def add_torrent():
         if request.method == "POST":
 
             torrents[str(int(list(torrents.keys())[-1]) + 1)] = {
-                "user_id": session["id"],
                 "full_name": request.form["full-name"],
                 "name": request.form["display-name"],
                 "magnet": request.form["magnet"],
@@ -491,12 +493,11 @@ def edit_torrent(tor_id):
     if session["id"] != 0:
         if request.method == "POST":
             user = torrents[str(tor_id)]['user']
-            user_id = torrents[str(tor_id)]['user_id']
+            # user_id = torrents[str(tor_id)]['user_id']
 
             torrents.pop(str(tor_id))
 
             torrents[str(int(list(torrents.keys())[-1]) + 1)] = {
-                "user_id": user_id,
                 "full_name": request.form["full-name"],
                 "name": request.form["display-name"],
                 "magnet": request.form["magnet"],

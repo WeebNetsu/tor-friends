@@ -48,8 +48,8 @@
     <div class="col-md-12">
       <div id="all-items">
         <h1><center>Your Torrents</center></h1>
-        {% for key, item in torrents.items() %} {% if item["user_id"] ==
-        det["id"] %}
+        {% for key, item in torrents.items() %} {% if item["user"] ==
+        det["username"] %}
         <div class="item">
           <a href="{{ item['magnet'] }}" class="item-link"
             >{{ item['name'] }}</a
@@ -81,7 +81,11 @@
 
               <tr>
                 <td>Type</td>
-                <td>{{ item["type"] }} -> {{ item["minor_type"] }}</td>
+
+                <td>
+                  {{ item["type"] }} {% if not item["type"] in ["Music",
+                  "Other"] %} -> {{ item["minor_type"] }} {% endif %}
+                </td>
               </tr>
 
               <tr>
@@ -106,9 +110,11 @@
               <tr>
                 <td>Remove</td>
                 <td>
-                  <button class="btn btn-outline-danger btn-sm">
-                    <i class="fa fa-trash"></i>
-                  </button>
+                  <a href="/torrent/del/{{ key }}">
+                    <button class="btn btn-outline-danger btn-sm">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </a>
                 </td>
               </tr>
             </table>

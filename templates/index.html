@@ -22,7 +22,7 @@
         <!--  -->
         {% for key, item in torrents.items() %}
         <!--  -->
-        {% if det["id"] == item["user_id"] or det["mod"] %}
+        {% if det["username"] == item["user"] or det["mod"] %}
         <div class="item">
           <a href="{{ item['magnet'] }}" class="item-link"
             >{{ item['name'] }}</a
@@ -54,7 +54,13 @@
 
               <tr>
                 <td>Type</td>
-                <td>{{ item["type"] }} -> {{ item["minor_type"] }}</td>
+                <td>
+                  {{ item["type"] }} {% if not item["type"] in ["Music",
+                  "Other"] %} -> {{ item["minor_type"] }}
+                  <!-- Block Begin -->
+                  {% endif %}
+                  <!-- Block End -->
+                </td>
               </tr>
 
               <tr>

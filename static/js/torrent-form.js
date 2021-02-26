@@ -5,8 +5,6 @@
             <option>Video</option>
             <option selected>Movie</option>
             `);
-    
-          $("#file-type-minor").prop("disabled", false);
         } else if (this.value == "Game" || this.value == "Application") {
           $("#file-type-minor").html(`
             <option selected>Windows</option>
@@ -15,10 +13,10 @@
             <option>Android</option>
             <option>iOS</option>
             `);
-    
-          $("#file-type-minor").prop("disabled", false);
-        } else {
-          $("#file-type-minor").prop("disabled", true);
+        } else if (this.value == "Music" || this.value == "Other") {
+          $("#file-type-minor").html(`
+            <option selected>None</option>
+            `);
         }
     });
     

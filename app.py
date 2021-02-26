@@ -30,8 +30,6 @@ class Users(db.Model):
         return f"ID: {self.id}\nusername: {self.username}\npassword: {self.password}\nmod: {self.mod}"
 
 
-db.create_all
-
 # READING JSON FROM A FILE
 json_data = open("static/src/json/torrents.json", 'r')
 # will read from file (and convert to dictionary)

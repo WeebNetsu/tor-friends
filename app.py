@@ -15,7 +15,8 @@ app.secret_key = "*VVD9%tVv%yhiYR5k9F0Y44eLx$HPQ*#V#/rEwbP"
 # save in this folder
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://netsu:root@localhost/torfriends"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://bcc27f206e1efd:6cb2d273@us-cdbr-east-03.cleardb.com/heroku_17d66c25a2c0a2d"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://b718d725c7509c:92c6556a@us-cdbr-east-03.cleardb.com/heroku_98da251490da343"
+
 db = SQLAlchemy(app)  # link database and app
 
 

@@ -8,8 +8,3 @@ CREATE TABLE `users`
 
 PRIMARY KEY (`id`)
 );
-
-
-
-
-

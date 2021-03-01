@@ -14,9 +14,9 @@ app = Flask(__name__)
 app.secret_key = "*VVD9%tVv%yhiYR5k9F0Y44eLx$HPQ*#V#/rEwbP"
 app.url_map.strict_slashes = False  # doesn't force a "/" at the end of a link
 # save in this folder
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://netsu:root@localhost/torfriends"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://b718d725c7509c:92c6556a@us-cdbr-east-03.cleardb.com/heroku_98da251490da343"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://b718d725c7509c:92c6556a@us-cdbr-east-03.cleardb.com/heroku_98da251490da343"
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -491,17 +491,30 @@ def add_torrent():
     if "id" in session:
         if request.method == "POST":
             print(session["username"])
-            torrents[str(int(list(torrents.keys())[-1]) + 1)] = {
-                "full_name": request.form["full-name"],
-                "name": request.form["display-name"],
-                "magnet": request.form["magnet"],
-                "size": request.form["file-size"],
-                "size_type": request.form["file-size-type"],
-                "type": request.form["file-type"],
-                "minor_type": request.form["file-type-minor"],
-                "desc": request.form["desc"],
-                "user": session["username"]
-            }
+            try:
+                torrents[str(int(list(torrents.keys())[-1]) + 1)] = {
+                    "full_name": request.form["full-name"],
+                    "name": request.form["display-name"],
+                    "magnet": request.form["magnet"],
+                    "size": request.form["file-size"],
+                    "size_type": request.form["file-size-type"],
+                    "type": request.form["file-type"],
+                    "minor_type": request.form["file-type-minor"],
+                    "desc": request.form["desc"],
+                    "user": session["username"]
+                }
+            except IndexError:  # if torrent file is empty
+                torrents["1"] = {
+                    "full_name": request.form["full-name"],
+                    "name": request.form["display-name"],
+                    "magnet": request.form["magnet"],
+                    "size": request.form["file-size"],
+                    "size_type": request.form["file-size-type"],
+                    "type": request.form["file-type"],
+                    "minor_type": request.form["file-type-minor"],
+                    "desc": request.form["desc"],
+                    "user": session["username"]
+                }
 
             write_torrent_json(torrents)
 
@@ -540,4 +553,4 @@ def edit_torrent(tor_id):
 
 if __name__ == "__main__":
     # REMEMBER TO CHANGE DATABASE IF WORKING LOCALLY
-    app.run()
+    app.run(debug=True)

@@ -37,10 +37,17 @@ class Users(db.Model):
 
 
 # READING JSON FROM A FILE
-json_data = open("static/src/json/torrents.json", 'r')
-# will read from file (and convert to dictionary)
-torrents = OrderedDict(json.load(json_data))
-json_data.close()
+try:
+    json_data = open("static/src/json/torrents.json", 'r')
+    # will read from file (and convert to dictionary)
+    torrents = OrderedDict(json.load(json_data))
+    json_data.close()
+except FileNotFoundError:
+    # erase everything and rewrite the file
+    tFile = open("static/src/json/torrents.json", 'w')
+    tFile.write("{\n}")
+    tFile.close()
+
 
 # NOTE: all render_templates shoudl include session EXCEPT for login
 

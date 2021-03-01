@@ -132,29 +132,4 @@
     </div>
   </div>
 </div>
-<!--  -->
-
-{% if wrongpass %}
-<script>
-  alert("Password was incorrect");
-</script>
-{% elif notfound %}
-<script>
-  alert("User not found. No changes made.");
-</script>
-{% elif ismod %}
-<script>
-  alert("You cannot modify other mod details.");
-</script>
-{% elif usernameexist %}
-<script>
-  alert("Username already exist");
-</script>
-{% elif modded %}
-<script>
-  alert("Changes successfully made");
-</script>
-{% endif %}
-<!--  -->
 {% endblock %}
-<!-- Block End -->

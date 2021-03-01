@@ -114,6 +114,28 @@
     {% endif %}
 
     <!-- Block Begin -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+    <!-- check if there are actually messages to display -->
+    {% if messages %}
+    <!-- loop through all the messages -->
+    {% for category, msg in messages %}
+    <!-- display the messages -->
+    {% if category == "error" %}
+      <div class="alert alert-danger alert-dismissible fade show">
+    {% else %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+    {% endif %}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ msg }}
+    </div>
+    {% endfor %}
+    <!-- For End -->
+    {% endif %}
+    <!-- Block Begin -->
+    {% endwith %}
+    <!--  -->
+
     {% block body %} {% endblock %}
     <!-- Block End -->
 

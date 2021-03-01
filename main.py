@@ -1,6 +1,7 @@
 # push to heroku: https://www.youtube.com/watch?v=Li0Abz-KT78
+# REMEMBER TO CHANGE DATABASE IF WORKING LOCALLY
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from collections import OrderedDict
 
@@ -11,11 +12,13 @@ from auxillary import *
 
 app = Flask(__name__)
 app.secret_key = "*VVD9%tVv%yhiYR5k9F0Y44eLx$HPQ*#V#/rEwbP"
-
+app.url_map.strict_slashes = False  # doesn't force a "/" at the end of a link
 # save in this folder
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://netsu:root@localhost/torfriends"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://b718d725c7509c:92c6556a@us-cdbr-east-03.cleardb.com/heroku_98da251490da343"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://b718d725c7509c:92c6556a@us-cdbr-east-03.cleardb.com/heroku_98da251490da343"
+
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)  # link database and app
 
@@ -39,44 +42,38 @@ json_data = open("static/src/json/torrents.json", 'r')
 torrents = OrderedDict(json.load(json_data))
 json_data.close()
 
-
-# session = {
-#     "id": 0,  # 0
-#     "username": None,  # "netsu",  # None
-#     "mod": False  # false
-# }
 # NOTE: all render_templates shoudl include session EXCEPT for login
 
 
-@app.route("/rules")
+@app.route("/rules/")
 def rules():
     if "id" in session:
         return render_template("rules.html", session=[session])
 
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-@app.route("/admin/user/mod/<string:category>")
+@app.route("/admin/user/mod/<string:category>/")
 def edit_user_details(category):
     if "id" in session and "mod" in session:
         if request.args.get('wrongpass'):
-            return render_template("admin_mod_user.html", session=[session], category=category, wrongpass=True)
+            flash("Password is incorrect.", "error")
 
         if request.args.get('notfound'):
-            return render_template("admin_mod_user.html", session=[session], category=category, notfound=True)
+            flash("User not found. No changes made.", "error")
 
         if request.args.get('ismod'):
-            return render_template("admin_mod_user.html", session=[session], category=category, ismod=True)
+            flash("You cannot modify other mod details.", "warning")
 
         if request.args.get('usernameexist'):
-            return render_template("admin_mod_user.html", session=[session], category=category, usernameexist=True)
+            flash("Username already exist.", "error")
 
         if request.args.get('modded'):
-            return render_template("admin_mod_user.html", session=[session], category=category, modded=True)
+            flash("Successfully made changes.", "info")
 
         return render_template("admin_mod_user.html", session=[session], category=category)
 
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
 @app.route("/admin/mod/user/set/<string:category>", methods=["GET", "POST"])
@@ -145,39 +142,39 @@ def set_user_details(category):
 
                     return redirect(f"/admin/user/mod/{category}?modded=True")
                 else:
-                    return redirect("/admin")
+                    return redirect(url_for("admin"))
 
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
-@app.route("/admin")
+@app.route("/admin/")
 def admin():
     if "id" in session and "mod" in session:
         return render_template("admin.html", session=[session])
 
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
 @app.route("/admin/user/delete")
 def delete_user():
     if "id" in session and "mod" in session:
         if request.args.get('notfound'):
-            return render_template("delete_user.html", notfound=True, session=[session])
+            flash("User not found.", "error")
 
         if request.args.get('userdeleted'):
-            return render_template("delete_user.html", userdeleted=True, session=[session])
+            flash("User successfully deleted.", "info")
 
         if request.args.get('ismod'):
-            return render_template("delete_user.html", ismod=True, session=[session])
+            flash("Cannot remove other mods.", "warning")
 
         if request.args.get('wrongpass'):
-            return render_template("delete_user.html", wrongpass=True, session=[session])
+            flash("Password is incorrect.", "error")
 
         return render_template("delete_user.html", session=[session])
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
-@app.route("/admin/user/deleted", methods=["GET", "POST"])
+@app.route("/admin/user/deleted/", methods=["GET", "POST"])
 def remove_user():
     if "id" in session and "mod" in session:
         if request.method == "POST":  # if they logged in
@@ -187,17 +184,17 @@ def remove_user():
             admin = Users.query.filter_by(
                 username=session["username"]).all()[0]
             if admin.password != encrypt_string(admin_password):
-                return redirect("/admin/user/delete?wrongpass=True")
+                return redirect(url_for("delete_user", wrongpass=True))
 
             try:
                 user = Users.query.filter_by(username=username).all()[
                     0]
             except IndexError:  # if user not found
-                return redirect("/admin/user/delete?notfound=True")
+                return redirect(url_for("delete_user", notfound=True))
             else:
                 if user.mod_:
                     if not admin.admin_:
-                        return redirect("/admin/user/delete?ismod=True")
+                        return redirect(url_for("delete_user", ismod=True))
 
                 # remove all user torrents
                 x = []
@@ -214,25 +211,25 @@ def remove_user():
                 db.session.commit()
 
                 write_torrent_json(torrents)
-                return redirect("/admin/user/delete?userdeleted=True")
+                return redirect(url_for("delete_user", userdeleted=True))
 
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
 @app.route("/admin/user/add")
 def add_user():
     if "id" in session and "mod" in session:
         if request.args.get('added'):
-            return render_template("add_user.html", useradded=True, session=[session])
+            flash("Successfully added user.", "info")
 
         if request.args.get('usernameexist'):
-            return render_template("add_user.html", exsists=True, session=[session])
+            flash("Username already exists.", "error")
 
         return render_template("add_user.html", session=[session])
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
-@app.route("/admin/user/added", methods=["GET", "POST"])
+@app.route("/admin/user/added/", methods=["GET", "POST"])
 def create_user():
     if "id" in session and "mod" in session:
         if request.method == "POST":  # if they logged in
@@ -254,28 +251,28 @@ def create_user():
                 db.session.add(new_user)  # adds content to database
                 db.session.commit()  # save all changes to database
 
-                return redirect("/admin/user/add?added=True")
+                return redirect(url_for("add_user", added=True))
             else:  # if user exists then:
-                return redirect("/admin/user/add?usernameexist=True")
+                return redirect(url_for("add_user", usernameexist=True))
 
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-@app.route("/login")
+@app.route("/login/")
 def login():
     if request.args.get('auth') == "fail":
-        return render_template("login.html", no_nav=True, fail=True)
+        flash("Username or password is incorrect", "error")
 
     return render_template("login.html", no_nav=True)
 
 
-@app.route("/logout")
+@app.route("/logout/")
 def logout():
     session.pop("id", None)
     session.pop("mod", None)
     session.pop("username", None)
 
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
 """ 
@@ -325,7 +322,7 @@ def index():
             user = Users.query.filter_by(username=username).all()[
                 0]  # [0] so we don't get a list returned
         except IndexError:
-            return redirect("/login?auth=fail")
+            return redirect(url_for("login", auth="fail"))
 
         if user.password == encrypt_string(password):
             session["id"] = user.id
@@ -335,45 +332,45 @@ def index():
 
             return render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters)
         else:
-            return redirect("/login?auth=fail")
+            return redirect(url_for("login", auth="fail"))
 
     if "id" in session:
-        if request.args.get('del'):
-            return render_template("index.html", torrents=rev_torrents, session=[session], tor_deleted=True, rsc=remove_special_characters)
+        if request.args.get('deleted'):
+            flash("Torrent Deleted.", "info")
         return render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters)
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
 # app.view_functions['static'] = redirect("/")
 @app.route("/static/src/json/torrents.json")
 def protected():
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
-@app.route("/user")
+@app.route("/user/")
 def user():
     if "id" in session:
         if request.args.get('passchanged'):
-            return render_template("user.html", session=[session], torrents=torrents, rsc=remove_special_characters, newpass=True)
+            flash("Password changed successfully.", "info")
 
         return render_template("user.html", session=[session], torrents=torrents, rsc=remove_special_characters)
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-@app.route("/user/edit/username")
+@app.route("/user/edit/username/")
 def edit_username():
     if "id" in session:
         if request.args.get('found'):
-            return render_template("edit_user.html", session=[session], edit_username=True, exsists=True)
+            flash("Username already exists.", "error")
 
-        if request.args.get('pass'):
-            return render_template("edit_user.html", session=[session], edit_username=True, invalid_pass=True)
+        if request.args.get('passed'):
+            flash("Password is incorrect.", "error")
 
         return render_template("edit_user.html", session=[session], edit_username=True)
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-@app.route("/user/username/change", methods=["GET", "POST"])
+@app.route("/user/username/change/", methods=["GET", "POST"])
 def change_username():
     if "id" in session:
         if request.method == "POST":
@@ -382,14 +379,14 @@ def change_username():
             name = Users.query.filter_by(username=username).all()
 
             if name:  # username already exists
-                return redirect("/user/edit/username?found=True")
+                return redirect(url_for("edit_username", found=True))
 
             user = Users.query.get_or_404(session["id"])
             if user.password == encrypt_string(password):
                 user.username = username
                 db.session.commit()  # save all changes to database
             else:
-                return redirect("/user/edit/username?pass=True")
+                return redirect(url_for("edit_username", passed=True))
 
             for key, val in torrents.items():
                 if(val["user"] == session["username"]):
@@ -399,25 +396,24 @@ def change_username():
 
             session["username"] = username
 
-            return redirect("/user")
-        return redirect("/user")
-    return redirect("/login")
+        return redirect(url_for("user"))
+    return redirect(url_for("login"))
 
 
-@app.route("/user/edit/password")
+@app.route("/user/edit/password/")
 def edit_password():
     if "id" in session:
-        if request.args.get('pass'):
-            return render_template("edit_user.html", session=[session], invalid_pass=True)
+        if request.args.get('passed'):
+            flash("Password is incorrect.", "error")
 
         if request.args.get('cpass'):
-            return render_template("edit_user.html", session=[session], no_match_pass=True)
+            flash("Passwords do not match.", "warning")
 
         return render_template("edit_user.html", session=[session])
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-@app.route("/user/password/change", methods=["GET", "POST"])
+@app.route("/user/password/change/", methods=["GET", "POST"])
 def change_password():
     if "id" in session:
         if request.method == "POST":
@@ -426,39 +422,46 @@ def change_password():
             old_password = request.form["old_password"]
 
             if not new_password == con_password:
-                return redirect("/user/edit/password?cpass=True")
+                return redirect(url_for("edit_password", cpass=True))
 
             user = Users.query.get_or_404(session["id"])
             if user.password == encrypt_string(old_password):
                 user.password = encrypt_string(new_password)
                 db.session.commit()  # save all changes to database
             else:
-                return redirect("/user/edit/password?pass=True")
+                return redirect(url_for("edit_password", passed=True))
 
-            return redirect("/user?passchanged=True")
-        return redirect("/user")
-    return redirect("/login")
+            return redirect(url_for("user", passchanged=True))
+        return redirect(url_for("user"))
+    return redirect(url_for("login"))
 
 
-@app.route("/torrent")
+@app.route("/torrent/")
 def torrent():
     if "id" in session:
         return render_template("torrent-mod.html", add_torrent=True, session=[session])
         if request.args.get('edit') == "true":
             return render_template("torrent-mod.html", session=[session])
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-@app.route("/torrent/<int:tor_id>")
+@app.route("/torrent/<int:tor_id>/")
 def torrent_editing(tor_id):
     if "id" in session:
         return render_template("torrent-mod.html", data=torrents[str(tor_id)], tor_id=tor_id, session=[session])
         # if request.args.get('edit') == "true":
         # return render_template("torrent-mod.html")
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-@app.route("/torrent/del/<int:tor_id>")
+@app.route("/torrent/del/<int:tor_id>/")
+def confirm_delete(tor_id):
+    if "id" in session:
+        return render_template("confirm.html", tor_id=tor_id)
+    return redirect(url_for("login"))
+
+
+@app.route("/torrent/del/<int:tor_id>/confirmed", methods=["GET", "POST"])
 def torrent_deleting(tor_id):
     if "id" in session:
         if torrents[str(tor_id)]["user"] == session["username"] or session["mod"]:
@@ -466,12 +469,12 @@ def torrent_deleting(tor_id):
 
             write_torrent_json(torrents)
 
-            return redirect("/?del=True")
-        return redirect("/")
-    return redirect("/login")
+            return redirect(url_for("index", deleted=True))
+        return redirect(url_for("index"))
+    return redirect(url_for("login"))
 
 
-@app.route("/torrent/add", methods=["GET", "POST"])
+@app.route("/torrent/add/", methods=["GET", "POST"])
 def add_torrent():
     if "id" in session:
         if request.method == "POST":
@@ -490,12 +493,12 @@ def add_torrent():
 
             write_torrent_json(torrents)
 
-            return redirect("/")
-        return redirect("/torrent")
-    return redirect("/login")
+            return redirect(url_for("index"))
+        return redirect(url_for("torrent"))
+    return redirect(url_for("login"))
 
 
-@app.route("/torrent/edit/<int:tor_id>", methods=["GET", "POST"])
+@app.route("/torrent/edit/<int:tor_id>/", methods=["GET", "POST"])
 def edit_torrent(tor_id):
     if "id" in session:
         if request.method == "POST":
@@ -518,10 +521,11 @@ def edit_torrent(tor_id):
 
             write_torrent_json(torrents)
 
-            return redirect("/")
-        return redirect("/torrent")
-    return redirect("/login")
+            return redirect(url_for("index"))
+        return redirect(url_for("torrent"))
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":
-    app.run()
+    # REMEMBER TO CHANGE DATABASE IF WORKING LOCALLY
+    app.run(debug=True)

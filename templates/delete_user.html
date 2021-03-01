@@ -75,29 +75,5 @@
   });
 </script>
 
-{% if notfound %}
-<script>
-  alert("User not found");
-</script>
-{% endif %}
-<!--  -->
-{% if userdeleted %}
-<script>
-  alert("User successfully deleted");
-</script>
-{% endif %}
-<!--  -->
-{% if ismod %}
-<script>
-  alert("Cannot remove other mods.");
-</script>
-{% endif %}
-<!--  -->
-{% if wrongpass %}
-<script>
-  alert("Password is incorrect");
-</script>
-{% endif %}
-<!--  -->
 {% endblock %}
 <!-- Block End -->

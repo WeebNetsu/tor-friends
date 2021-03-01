@@ -130,28 +130,6 @@
   <!--  -->
   {% endfor %}
 </div>
-
-{% if exsists %}
-<script>
-  alert("Username already exists");
-</script>
-{% endif %}
-
-<!--  -->
-
-{% if invalid_pass %}
-<script>
-  alert("Password is incorrect");
-</script>
-{% endif %}
-
-<!--  -->
-
-{% if no_match_pass %}
-<script>
-  alert("Passwords do not match.");
-</script>
-{% endif %}
 <!--  -->
 {% endblock %}
 <!-- Block End -->

@@ -490,7 +490,7 @@ def torrent_deleting(tor_id):
 def add_torrent():
     if "id" in session:
         if request.method == "POST":
-
+            print(session["username"])
             torrents[str(int(list(torrents.keys())[-1]) + 1)] = {
                 "full_name": request.form["full-name"],
                 "name": request.form["display-name"],

@@ -48,6 +48,11 @@ except FileNotFoundError:
     tFile.write("{\n}")
     tFile.close()
 
+    json_data = open("static/src/json/torrents.json", 'r')
+    # will read from file (and convert to dictionary)
+    torrents = OrderedDict(json.load(json_data))
+    json_data.close()
+
 
 # NOTE: all render_templates shoudl include session EXCEPT for login
 

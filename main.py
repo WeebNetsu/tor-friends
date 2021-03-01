@@ -44,7 +44,7 @@ try:
     json_data.close()
 except FileNotFoundError:
     # erase everything and rewrite the file
-    tFile = open("static/src/json/torrents.json", 'w')
+    tFile = open("static/src/json/torrents.json", 'w+')
     tFile.write("{\n}")
     tFile.close()
 

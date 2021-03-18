@@ -1,6 +1,7 @@
 # my stuff
 *.map
 torrents.json
+config.json
 tmp/
 
 # Byte-compiled / optimized / DLL files

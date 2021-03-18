@@ -4,25 +4,34 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from collections import OrderedDict
+from datetime import datetime
 
 import json
+import random
 
 # my files
 from auxillary import *
 
 app = Flask(__name__)
-app.secret_key = "*VVD9%tVv%yhiYR5k9F0Y44eLx$HPQ*#V#/rEwbP"
-app.url_map.strict_slashes = False  # doesn't force a "/" at the end of a link
-# save in this folder
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
-# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://netsu:root@localhost/torfriends"
-# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://b718d725c7509c:92c6556a@us-cdbr-east-03.cleardb.com/heroku_98da251490da343"
 
+with open("static/src/json/config.json", 'r') as json_data:
+    config_data = json.load(json_data)
+    app.secret_key = config_data["secret_key"]
+    # app.config["SQLALCHEMY_DATABASE_URI"] = "sqltype://username:password@host/database"
+    # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = config_data["database"]
+
+app.url_map.strict_slashes = False  # doesn't force a "/" at the end of a link
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)  # link database and app
 
 
+"""
+from main import db, Users
+
+db.create_all()
+"""
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
@@ -30,11 +39,13 @@ class Users(db.Model):
     mod_ = db.Column(db.Integer, nullable=False, default=0)  # 0 = false
     # admins are the only people who can remove mods
     admin_ = db.Column(db.Integer, nullable=False, default=0)
+    # TODO: Do data signed in and torrent dates and stuffs
+    date_accessed = db.Column(db.Date, nullable=False,
+                              default=datetime.today().strftime('%Y-%m-%d'))
 
     # when you say BlogPost.query.all() the below will be returned
     def __repr__(self):
         return f"ID: {self.id}\nusername: {self.username}\npassword: {self.password}\nmod: {self.mod}"
-
 
 # READING JSON FROM A FILE
 try:
@@ -54,20 +65,25 @@ except FileNotFoundError:
     json_data.close()
 
 
-# NOTE: all render_templates shoudl include session EXCEPT for login
+def guest_sign_in():
+    session["id"] = random.randint(1, 999999)  # guest random ID
+    session["username"] = "Guest"
+    session["guest"] = True
+    flash("Signed in as Guest user", "info")
 
 
+# NOTE: all render_templates should include session EXCEPT for login
 @app.route("/rules/")
 def rules():
-    if "id" in session:
-        return render_template("rules.html", session=[session])
+    if not "id" in session:
+        guest_sign_in()
 
-    return redirect(url_for("login"))
+    return render_template("rules.html", session=[session])
 
 
 @app.route("/admin/user/mod/<string:category>/")
 def edit_user_details(category):
-    if "id" in session and "mod" in session:
+    if "id" in session and "mod" in session and not "guest" in session:
         if request.args.get('wrongpass'):
             flash("Password is incorrect.", "error")
 
@@ -85,12 +101,12 @@ def edit_user_details(category):
 
         return render_template("admin_mod_user.html", session=[session], category=category)
 
-    return redirect(url_for("index"))
+    return redirect(url_for("index", notmod=True))
 
 
 @app.route("/admin/mod/user/set/<string:category>", methods=["GET", "POST"])
 def set_user_details(category):
-    if "id" in session and "mod" in session:
+    if "id" in session and "mod" in session and not "guest" in session:
         if request.method == "POST":
             admin_password = request.form["admin_password"]
 
@@ -156,20 +172,20 @@ def set_user_details(category):
                 else:
                     return redirect(url_for("admin"))
 
-    return redirect(url_for("index"))
+    return redirect(url_for("index", notmod=True))
 
 
 @app.route("/admin/")
 def admin():
-    if "id" in session and "mod" in session:
+    if "id" in session and "mod" in session and not "guest" in session:
         return render_template("admin.html", session=[session])
 
-    return redirect(url_for("index"))
+    return redirect(url_for("index", notmod=True))
 
 
 @app.route("/admin/user/delete")
 def delete_user():
-    if "id" in session and "mod" in session:
+    if "id" in session and "mod" in session and not "guest" in session:
         if request.args.get('notfound'):
             flash("User not found.", "error")
 
@@ -183,12 +199,12 @@ def delete_user():
             flash("Password is incorrect.", "error")
 
         return render_template("delete_user.html", session=[session])
-    return redirect(url_for("index"))
+    return redirect(url_for("index", notmod=True))
 
 
 @app.route("/admin/user/deleted/", methods=["GET", "POST"])
 def remove_user():
-    if "id" in session and "mod" in session:
+    if "id" in session and "mod" in session and not "guest" in session:
         if request.method == "POST":  # if they logged in
             username = request.form["username"]
             admin_password = request.form["admin_password"]
@@ -225,12 +241,12 @@ def remove_user():
                 write_torrent_json(torrents)
                 return redirect(url_for("delete_user", userdeleted=True))
 
-    return redirect(url_for("index"))
+    return redirect(url_for("index", notmod=True))
 
 
 @app.route("/admin/user/add")
 def add_user():
-    if "id" in session and "mod" in session:
+    if "id" in session and "mod" in session and not "guest" in session:
         if request.args.get('added'):
             flash("Successfully added user.", "info")
 
@@ -238,12 +254,12 @@ def add_user():
             flash("Username already exists.", "error")
 
         return render_template("add_user.html", session=[session])
-    return redirect(url_for("index"))
+    return redirect(url_for("index", notmod=True))
 
 
 @app.route("/admin/user/added/", methods=["GET", "POST"])
 def create_user():
-    if "id" in session and "mod" in session:
+    if "id" in session and "mod" in session and not "guest" in session:
         if request.method == "POST":  # if they logged in
             username = request.form["username"]
             password = request.form["password"]
@@ -267,11 +283,38 @@ def create_user():
             else:  # if user exists then:
                 return redirect(url_for("add_user", usernameexist=True))
 
-    return redirect(url_for("login"))
+    return redirect(url_for("index", notmod=True))
 
 
-@app.route("/login/")
+@app.route("/signup/")
+def signup():
+    if request.args.get('usernameexist'):
+        flash("Username already exists.", "error")
+
+    return render_template("signup.html", no_nav=True)
+
+
+@app.route("/login/", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":  # if they logged in
+        username = request.form["uname"]
+        password = request.form["pwd"]
+
+        try:
+            # this also checks if the user exists, we get an index error if they dont
+            user = Users.query.filter_by(username=username).all()[
+                0]  # [0] so we don't get a list returned
+        except IndexError:  # if user does not exist
+            # insert data into database
+            new_user = Users(username=username,
+                             password=encrypt_string(password))
+            db.session.add(new_user)  # adds content to database
+            db.session.commit()  # save all changes to database
+
+            flash("Account has been created! Log in to get started.", "info")
+        else:  # if user exists then:
+            return redirect(url_for("signup", usernameexist=True))
+
     if request.args.get('auth') == "fail":
         flash("Username or password is incorrect", "error")
 
@@ -283,6 +326,7 @@ def logout():
     session.pop("id", None)
     session.pop("mod", None)
     session.pop("username", None)
+    session.pop("guest", None)
 
     return redirect(url_for("login"))
 
@@ -338,40 +382,48 @@ def index():
 
         if user.password == encrypt_string(password):
             session["id"] = user.id
+            session["username"] = user.username
             if user.mod_:
                 session["mod"] = user.mod_
-            session["username"] = user.username
 
             return render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters)
         else:
             return redirect(url_for("login", auth="fail"))
 
-    if "id" in session:
-        if request.args.get('deleted'):
-            flash("Torrent Deleted.", "info")
-        return render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters)
-    return redirect(url_for("login"))
+    if not "id" in session:  # if they didn't log in and is not logged in
+        guest_sign_in()
+
+    if request.args.get('deleted'):
+        flash("Torrent Deleted.", "info")
+
+    if request.args.get('guest'):
+        flash("Only logged in users can use that feature.", "info")
+
+    if request.args.get('notmod'):
+        flash("Only mods may use that feature.", "warning")
+
+    return render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters)
 
 
-# app.view_functions['static'] = redirect("/")
 @app.route("/static/src/json/torrents.json")
+@app.route("/static/src/json/config.json")
 def protected():
     return redirect(url_for("index"))
 
 
 @app.route("/user/")
 def user():
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         if request.args.get('passchanged'):
             flash("Password changed successfully.", "info")
 
         return render_template("user.html", session=[session], torrents=torrents, rsc=remove_special_characters)
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/user/edit/username/")
 def edit_username():
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         if request.args.get('found'):
             flash("Username already exists.", "error")
 
@@ -379,12 +431,12 @@ def edit_username():
             flash("Password is incorrect.", "error")
 
         return render_template("edit_user.html", session=[session], edit_username=True)
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/user/username/change/", methods=["GET", "POST"])
 def change_username():
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         if request.method == "POST":
             username = request.form["username"]
             password = request.form["password"]
@@ -409,12 +461,12 @@ def change_username():
             session["username"] = username
 
         return redirect(url_for("user"))
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/user/edit/password/")
 def edit_password():
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         if request.args.get('passed'):
             flash("Password is incorrect.", "error")
 
@@ -422,12 +474,12 @@ def edit_password():
             flash("Passwords do not match.", "warning")
 
         return render_template("edit_user.html", session=[session])
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/user/password/change/", methods=["GET", "POST"])
 def change_password():
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         if request.method == "POST":
             new_password = request.form["password"]
             con_password = request.form["password_confirm"]
@@ -445,37 +497,35 @@ def change_password():
 
             return redirect(url_for("user", passchanged=True))
         return redirect(url_for("user"))
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/torrent/")
 def torrent():
-    if "id" in session:
+    if "id" in session and not "guest" in session:
+        # if request.args.get('edit') == "true":
+        #     return render_template("torrent-mod.html", session=[session])
         return render_template("torrent-mod.html", add_torrent=True, session=[session])
-        if request.args.get('edit') == "true":
-            return render_template("torrent-mod.html", session=[session])
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/torrent/<int:tor_id>/")
 def torrent_editing(tor_id):
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         return render_template("torrent-mod.html", data=torrents[str(tor_id)], tor_id=tor_id, session=[session])
-        # if request.args.get('edit') == "true":
-        # return render_template("torrent-mod.html")
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/torrent/del/<int:tor_id>/")
 def confirm_delete(tor_id):
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         return render_template("confirm.html", tor_id=tor_id)
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/torrent/del/<int:tor_id>/confirmed", methods=["GET", "POST"])
 def torrent_deleting(tor_id):
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         if torrents[str(tor_id)]["user"] == session["username"] or session["mod"]:
             torrents.pop(str(tor_id))
 
@@ -483,12 +533,12 @@ def torrent_deleting(tor_id):
 
             return redirect(url_for("index", deleted=True))
         return redirect(url_for("index"))
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/torrent/add/", methods=["GET", "POST"])
 def add_torrent():
-    if "id" in session:
+    if "id" in session and not "guest" in session:
         if request.method == "POST":
             print(session["username"])
             try:
@@ -520,12 +570,13 @@ def add_torrent():
 
             return redirect(url_for("index"))
         return redirect(url_for("torrent"))
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 @app.route("/torrent/edit/<int:tor_id>/", methods=["GET", "POST"])
 def edit_torrent(tor_id):
-    if "id" in session:
+    # should be signed in and not as a guest
+    if "id" in session and not "guest" in session:
         if request.method == "POST":
             user = torrents[str(tor_id)]['user']
             # user_id = torrents[str(tor_id)]['user_id']
@@ -548,9 +599,9 @@ def edit_torrent(tor_id):
 
             return redirect(url_for("index"))
         return redirect(url_for("torrent"))
-    return redirect(url_for("login"))
+    return redirect(url_for("index", guest=True))
 
 
 if __name__ == "__main__":
     # REMEMBER TO CHANGE DATABASE IF WORKING LOCALLY
-    app.run(debug=True)
+    app.run()

@@ -5,8 +5,8 @@ import hashlib
 # these functions should not interact with Flask (just to keep things simple)
 
 
-def write_torrent_json(torrents, path):
-    json_file = open(path + "torrents.json", "w")
+def write_torrent_json(torrents, app):
+    json_file = app.open_resource("static/src/json/torrents.json", 'w')
     # put json into file (will automatically convert DICT to JSON)
     json.dump(torrents, json_file, indent=4)
     json_file.close()

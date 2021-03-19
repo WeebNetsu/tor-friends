@@ -13,14 +13,9 @@ import random
 from auxillary import *
 
 app = Flask(__name__)
-test_env = False # if i'm using a test environment
-
-json_folder = "/var/www/TorFriends/FlaskApp/static/src/json/"
-
-if test_env:
-    json_folder = "static/src/json/"
+test_env = True # if i'm using a test environment
     
-with open(json_folder + "config.json", 'r') as json_data:
+with app.open_resource("static/src/json/config.json", 'r') as json_data:
     config_data = json.load(json_data)
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqltype://username:password@host/database"
     if test_env:
@@ -56,17 +51,17 @@ class Users(db.Model):
 
 # READING JSON FROM A FILE
 try:
-    json_data = open(json_folder + "torrents.json", 'r')
+    json_data = app.open_resource("static/src/json/torrents.json", 'r')
     # will read from file (and convert to dictionary)
     torrents = OrderedDict(json.load(json_data))
     json_data.close()
 except FileNotFoundError:
     # erase everything and rewrite the file
-    tFile = open(json_folder + "torrents.json", 'w+')
+    tFile = app.open_resource("static/src/json/torrents.json", 'r')
     tFile.write("{\n}")
     tFile.close()
 
-    json_data = open(json_folder + "torrents.json", 'r')
+    json_data = app.open_resource("static/src/json/torrents.json", 'r')
     # will read from file (and convert to dictionary)
     torrents = OrderedDict(json.load(json_data))
     json_data.close()
@@ -147,7 +142,7 @@ def set_user_details(category):
                             if(val["user"] == username):
                                 val['user'] = new_username
 
-                        write_torrent_json(torrents, json_folder)
+                        write_torrent_json(torrents, app)
 
                         return redirect(f"/admin/user/mod/{category}?modded=True")
                     else:
@@ -245,7 +240,7 @@ def remove_user():
                 db.session.delete(user)
                 db.session.commit()
 
-                write_torrent_json(torrents, json_folder)
+                write_torrent_json(torrents, app)
                 return redirect(url_for("delete_user", userdeleted=True))
 
     return redirect(url_for("index", notmod=True))
@@ -463,7 +458,7 @@ def change_username():
                 if(val["user"] == session["username"]):
                     val['user'] = username
 
-            write_torrent_json(torrents, json_folder)
+            write_torrent_json(torrents, app)
 
             session["username"] = username
 
@@ -536,7 +531,7 @@ def torrent_deleting(tor_id):
         if torrents[str(tor_id)]["user"] == session["username"] or session["mod"]:
             torrents.pop(str(tor_id))
 
-            write_torrent_json(torrents, json_folder)
+            write_torrent_json(torrents, app)
 
             return redirect(url_for("index", deleted=True))
         return redirect(url_for("index"))
@@ -573,7 +568,7 @@ def add_torrent():
                     "user": session["username"]
                 }
 
-            write_torrent_json(torrents, json_folder)
+            write_torrent_json(torrents, app)
 
             return redirect(url_for("index"))
         return redirect(url_for("torrent"))
@@ -602,7 +597,7 @@ def edit_torrent(tor_id):
                 "user": user
             }
 
-            write_torrent_json(torrents, json_folder)
+            write_torrent_json(torrents, app)
 
             return redirect(url_for("index"))
         return redirect(url_for("torrent"))

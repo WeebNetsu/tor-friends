@@ -13,13 +13,18 @@ import random
 from auxillary import *
 
 app = Flask(__name__)
+test_env = False # if i'm using a test environment
 
-with open("static/src/json/config.json", 'r') as json_data:
+json_folder = "/var/www/TorFriends/FlaskApp/static/src/json/"
+
+if test_env:
+    json_folder = "static/src/json/"
+    
+with open(json_folder + "config.json", 'r') as json_data:
     config_data = json.load(json_data)
-    app.secret_key = config_data["secret_key"]
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqltype://username:password@host/database"
-    # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
-    app.config["SQLALCHEMY_DATABASE_URI"] = config_data["database"]
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
+    # app.config["SQLALCHEMY_DATABASE_URI"] = config_data["database"]
 
 app.url_map.strict_slashes = False  # doesn't force a "/" at the end of a link
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -28,7 +33,7 @@ db = SQLAlchemy(app)  # link database and app
 
 
 """
-from main import db, Users
+from __init__ import db, Users
 
 db.create_all()
 """
@@ -49,17 +54,17 @@ class Users(db.Model):
 
 # READING JSON FROM A FILE
 try:
-    json_data = open("static/src/json/torrents.json", 'r')
+    json_data = open(json_folder + "torrents.json", 'r')
     # will read from file (and convert to dictionary)
     torrents = OrderedDict(json.load(json_data))
     json_data.close()
 except FileNotFoundError:
     # erase everything and rewrite the file
-    tFile = open("static/src/json/torrents.json", 'w+')
+    tFile = open(json_folder + "torrents.json", 'w+')
     tFile.write("{\n}")
     tFile.close()
 
-    json_data = open("static/src/json/torrents.json", 'r')
+    json_data = open(json_folder + "torrents.json", 'r')
     # will read from file (and convert to dictionary)
     torrents = OrderedDict(json.load(json_data))
     json_data.close()
@@ -604,4 +609,8 @@ def edit_torrent(tor_id):
 
 if __name__ == "__main__":
     # REMEMBER TO CHANGE DATABASE IF WORKING LOCALLY
-    app.run()
+    if test_env:
+        app.secret_key = 'testing_key'
+        app.run(debug=True)
+    else:
+        app.run()

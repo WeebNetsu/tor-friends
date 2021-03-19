@@ -147,7 +147,7 @@ def set_user_details(category):
                             if(val["user"] == username):
                                 val['user'] = new_username
 
-                        write_torrent_json(torrents)
+                        write_torrent_json(torrents, json_folder)
 
                         return redirect(f"/admin/user/mod/{category}?modded=True")
                     else:
@@ -245,7 +245,7 @@ def remove_user():
                 db.session.delete(user)
                 db.session.commit()
 
-                write_torrent_json(torrents)
+                write_torrent_json(torrents, json_folder)
                 return redirect(url_for("delete_user", userdeleted=True))
 
     return redirect(url_for("index", notmod=True))
@@ -463,7 +463,7 @@ def change_username():
                 if(val["user"] == session["username"]):
                     val['user'] = username
 
-            write_torrent_json(torrents)
+            write_torrent_json(torrents, json_folder)
 
             session["username"] = username
 
@@ -536,7 +536,7 @@ def torrent_deleting(tor_id):
         if torrents[str(tor_id)]["user"] == session["username"] or session["mod"]:
             torrents.pop(str(tor_id))
 
-            write_torrent_json(torrents)
+            write_torrent_json(torrents, json_folder)
 
             return redirect(url_for("index", deleted=True))
         return redirect(url_for("index"))
@@ -573,7 +573,7 @@ def add_torrent():
                     "user": session["username"]
                 }
 
-            write_torrent_json(torrents)
+            write_torrent_json(torrents, json_folder)
 
             return redirect(url_for("index"))
         return redirect(url_for("torrent"))
@@ -602,7 +602,7 @@ def edit_torrent(tor_id):
                 "user": user
             }
 
-            write_torrent_json(torrents)
+            write_torrent_json(torrents, json_folder)
 
             return redirect(url_for("index"))
         return redirect(url_for("torrent"))

@@ -23,8 +23,10 @@ if test_env:
 with open(json_folder + "config.json", 'r') as json_data:
     config_data = json.load(json_data)
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqltype://username:password@host/database"
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
-    # app.config["SQLALCHEMY_DATABASE_URI"] = config_data["database"]
+    if test_env:
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tmp/users.db"
+    else:
+        app.config["SQLALCHEMY_DATABASE_URI"] = config_data["database"]
 
 app.url_map.strict_slashes = False  # doesn't force a "/" at the end of a link
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

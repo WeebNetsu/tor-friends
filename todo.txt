@@ -1,0 +1,6 @@
+TODO:
+Add "Stay Logged In" feature
+Add report option
+Add Notifications
+Add Request seeding button (will notify the owner that they should seed)
+Add search ability

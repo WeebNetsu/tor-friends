@@ -1,7 +1,4 @@
-# push to heroku: https://www.youtube.com/watch?v=Li0Abz-KT78
-# REMEMBER TO CHANGE DATABASE IF WORKING LOCALLY
-
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from collections import OrderedDict
 from datetime import datetime
@@ -73,6 +70,9 @@ def guest_sign_in():
     session["guest"] = True
     flash("Signed in as Guest user", "info")
 
+@app.route("/ads.txt")
+def ads(): # so ads.txt can be accessed by ad website
+	return send_from_directory("static", "ads.txt")
 
 # NOTE: all render_templates should include session EXCEPT for login
 @app.route("/rules/")
@@ -375,6 +375,8 @@ def index():
     if request.method == "POST":  # if they logged in
         username = request.form["uname"]
         password = request.form["pwd"]
+        remember_me = request.form.getlist("remember_me")
+
         try:
             # this also checks if the user exists, we get an index error if they dont
             user = Users.query.filter_by(username=username).all()[
@@ -388,7 +390,10 @@ def index():
             if user.mod_:
                 session["mod"] = user.mod_
 
-            return render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters)
+            res = make_response(render_template("index.html", torrents=rev_torrents, session=[session], rsc=remove_special_characters))
+            if remember_me:
+                res.set_cookie("logged", value="here")
+            return res
         else:
             return redirect(url_for("login", auth="fail"))
 

@@ -44,7 +44,7 @@
 
     <title>Downloads</title>
 
-    <link rel="stylesheet" href="static/css/index.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
   </head>
   <body>
     {% if not no_nav %}
@@ -75,33 +75,33 @@
           {% for stat in session %}
             {% if not stat["guest"] %}
             <li class="nav-item">
-              <a class="nav-link" href="/user"
+              <a class="nav-link" href="/user/"
                 ><i class="fa fa-user"></i> Account</a
               >
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="/torrent"
+              <a class="nav-link" href="/torrent/"
                 ><i class="fa fa-upload"></i> Add Torrent</a
               >
             </li>
             
               {% if stat["mod"] %}
               <li class="nav-item">
-                <a class="nav-link" href="/admin"
+                <a class="nav-link" href="/admin/"
                   ><i class="fa fa-unlock-alt"></i> Admin</a
                 >
               </li>
               {% endif %}
 
               <li class="nav-item">
-                <a class="nav-link" href="/logout"
+                <a class="nav-link" href="/logout/"
                   ><i class="fa fa-sign-out"></i> Logout</a
                 >
               </li>
               {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="/logout"
+                <a class="nav-link" href="/logout/"
                   ><i class="fa fa-sign-out"></i> Sign In</a
                 >
               </li>
@@ -110,7 +110,7 @@
           {% endfor %}
 
           <li class="nav-item">
-            <a class="nav-link" href="/rules"
+            <a class="nav-link" href="/rules/"
               ><i class="fa fa-book"></i> Rules</a
             >
           </li>

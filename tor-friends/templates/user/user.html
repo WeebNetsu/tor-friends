@@ -42,6 +42,55 @@
         </a>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col">
+        <button
+          type="button"
+          class="btn btn-outline-danger"
+          data-toggle="modal"
+          data-target="#confirmAccDelete"
+        >
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- The Modal -->
+  <div class="modal fade" id="confirmAccDelete">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Confirm Account Removal</h4>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          You are about to delete your account <b>forever</b>, continue? (This will also remove all your torrents from the website)
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <a href="/user/self/delete/">
+            <button type="button" class="btn btn-outline-danger">
+              Continue
+            </button>
+          </a>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="row">

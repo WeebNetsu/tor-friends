@@ -22,7 +22,7 @@
   {% for det in session %}
   <!-- -->
   {% if edit_username %}
-  <form action="/user/username/change" method="post">
+  <form action="/user/edit/username/change/" method="post">
     <div class="form-group">
       <label>Current Username:</label>
       <input
@@ -74,7 +74,7 @@
 
   {% else %}
 
-  <form action="/user/password/change" method="post">
+  <form action="/user/edit/password/change/" method="post">
     <div class="form-group">
       <label for="new-name">New Password:</label>
       <input

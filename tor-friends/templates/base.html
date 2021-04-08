@@ -12,15 +12,10 @@
     <!-- Add site description -->
     <meta
       name="description"
-      content="Learn to code for free with videos and explainations! Current available courses: HTML, Delphi"
+      content="Upload and share your files with the world!"
     />
 
     <!-- ↓Image on tab↓ -->
-    <!-- <link
-       rel="shortcut icon"
-       type="image/x-icon"
-       href="src/images/logo.jpg"
-     /> -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/icon.png') }}" type="image/x-icon">
 
     <!-- Fontawesome -->
@@ -41,10 +36,8 @@
 
     <!-- Block Begin -->
     {% block head %} {% endblock %}
+    
     <!-- Block End -->
-
-    <title>Downloads</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
   </head>
   <body>
@@ -144,12 +137,9 @@
     <!--  -->
 
     {% block body %} {% endblock %}
-    <!-- Block End -->
 
     <script src="{{ url_for('static', filename='js/general.js') }}"></script>
 
-    <!-- Block Begin -->
     {% block scripts %} {% endblock %}
-    <!-- Block End -->
   </body>
 </html>

@@ -44,4 +44,8 @@ body {
   text-align: center;
 }
 
+.details {
+  overflow: scroll;
+}
+
 /*# sourceMappingURL=index.css.map */

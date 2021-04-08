@@ -24,14 +24,19 @@
         <!--  -->
         {% if det["username"] == item["user"] or det["mod"] %}
         <div class="item">
-          <a href="{{ item['magnet'] }}" class="item-link"
-            >{{ item['name'] }}</a
-          >
-
-          <button class="btn btn-outline-secondary btn-sm show-details">
-            Details <i class="fa fa-caret-down"></i>
-            <span class="for-item">for:{{ rsc(item['name']).lower() }}</span>
-          </button>
+          <div class="row">
+            <div class="col-sm-8">
+              <a href="{{ item['magnet'] }}" class="item-link"
+              >{{ item['name'] }}</a>
+            </div>
+  
+            <div class="col-sm-4">
+              <button class="btn btn-outline-secondary btn-sm show-details">
+                Details <i class="fa fa-caret-down"></i>
+                <span class="for-item">for:{{ rsc(item['name']).lower() }}</span>
+              </button>
+            </div>
+          </div>
 
           <div class="details hidden" id="{{ rsc(item['name']).lower() }}">
             <table class="table-dark table-hover">
@@ -102,20 +107,27 @@
         </div>
         {% else %}
         <div class="item">
-          <a href="{{ item['magnet'] }}" class="item-link"
-            >{{ item['name'] }}</a
-          >
-
-          <button class="btn btn-outline-secondary btn-sm show-details">
+          <div class="row">
+            <div class="col-sm-8">
+              <a href="{{ item['magnet'] }}" class="item-link"
+              >{{ item['name'] }}</a>
+            </div>
+  
+            <div class="col-sm-4">
+              <button class="btn btn-outline-secondary btn-sm show-details">
+                Details <i class="fa fa-caret-down"></i>
+                <span class="for-item">for:{{ rsc(item['name']).lower() }}</span>
+              </button>
+            </div>
+          </div>
+          <!-- <button class="btn btn-outline-secondary btn-sm show-details">
             Details <i class="fa fa-caret-down"></i>
-            <span class="for-item"
-              >for:{{ item['name'].lower().replace(" ", "_") }}</span
-            >
-          </button>
+            <span class="for-item">for:{{ item['name'].lower().replace(" ", "_") }}</span>
+          </button> -->
 
           <div
             class="details hidden"
-            id="{{ item['name'].lower().replace(' ', '_') }}"
+            id="{{ rsc(item['name']).lower() }}"
           >
             <table class="table-dark table-hover">
               <tr>

@@ -19,3 +19,18 @@ class Users(db.Model):
         # when you say BlogPost.query.all() the below will be returned
     def __repr__(self):
         return f"ID: {id}\nusername: {username}\npassword: {password}\nmod: {mod_}"
+
+def update_user_db_field(username, value, field="username"):
+    user = Users.query.filter_by(username=username).all()[0]
+    user = Users.query.get_or_404(user.id)
+
+    if field == "username":
+        user.username = value
+    elif field == "password":
+        user.password = value
+    elif field == "mod":
+        user.mod_ = value
+    elif field == "date_accessed":
+        user.date_accessed = value
+
+    db.session.commit()

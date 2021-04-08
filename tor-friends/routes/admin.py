@@ -3,7 +3,7 @@ from datetime import datetime
 
 from ..auxillary import *
 from ..databases.db import db
-from ..databases.Users_db import Users
+from ..databases.Users_db import *
 
 torrents = read_json_file("torrents")
 
@@ -62,9 +62,10 @@ def set_user_details(category):
                                 return redirect(f"/admin/user/mod/{category}?ismod=True")
 
                         # we already know the user exists, so no "or_404" needed
-                        user = Users.query.get(user.id)
-                        user.username = new_username
-                        db.session.commit()
+                        # user = Users.query.get(user.id)
+                        # user.username = new_username
+                        # db.session.commit()
+                        update_user_db_field(user.username, new_username)
 
                         for key, val in torrents.items():
                             if(val["user"] == username):
@@ -82,9 +83,10 @@ def set_user_details(category):
                             return redirect(f"/admin/user/mod/{category}?ismod=True")
 
                     # we already know the user exists, so no "or_404" needed
-                    user = Users.query.get(user.id)
-                    user.password = encrypt_string(new_password)
-                    db.session.commit()
+                    # user = Users.query.get(user.id)
+                    # user.password = encrypt_string(new_password)
+                    # db.session.commit()
+                    update_user_db_field(user.username, encrypt_string(new_password), "password")
 
                     return redirect(f"/admin/user/mod/{category}?modded=True")
                 elif category == "chmod":
@@ -94,9 +96,10 @@ def set_user_details(category):
                             return redirect(f"/admin/user/mod/{category}?ismod=True")
 
                     # we already know the user exists, so no "or_404" needed
-                    user = Users.query.get(user.id)
-                    user.mod_ = mod
-                    db.session.commit()
+                    # user = Users.query.get(user.id)
+                    # user.mod_ = mod
+                    # db.session.commit()
+                    update_user_db_field(user.username, mod, "mod")
 
                     return redirect(f"/admin/user/mod/{category}?modded=True")
                 else:

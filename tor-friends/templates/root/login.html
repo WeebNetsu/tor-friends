@@ -1,20 +1,33 @@
 {% extends 'base.html' %}
 <!-- Block Begin -->
 {% block head %}
+{% if signup %}
+<title>Sign Up | Tor-Friends</title>
+{% else %}
 <title>Login | Tor-Friends</title>
+{% endif %}
 
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/login.css') }}"
 />
 {% endblock %}
-<!-- Block End -->
-
-<!-- Block Begin -->
+<!--  -->
 {% block body %}
 <div class="container">
-  <form action="/" class="was-validated" method="post">
-    <h1><a href="/" style="color: #fff">Tor-Friends</a></h1>
+    {% if signup %}
+      <form action="/login" class="was-validated" method="post">
+    {% else %}
+      <form action="/" class="was-validated" method="post">
+    {% endif %}
+    
+    <h1><a href="/">Tor-Friends</a></h1>
+    {% if signup %}
+      <p id="log_type">[Sign Up]</p>
+    {% else %}
+      <p id="log_type">[Login]</p>
+    {% endif %}
+    
     <div class="form-group">
       <label for="uname">Username:</label>
       <input
@@ -56,13 +69,23 @@
 
     <div class="row">
       <div class="col">
-        <button type="submit" class="btn btn-primary">
-          Login <i class="fa fa-sign-in"></i>
-        </button>
+        {% if signup %}
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-sign-in"></i> Sign Up
+          </button>
+        {% else %}
+          <button type="submit" class="btn btn-primary">
+            Login <i class="fa fa-sign-in"></i>
+          </button>
+        {% endif %}
       </div>
 
       <div class="col">
-        <a href="/signup/">No account?</a>
+        {% if signup %}
+          <a href="/login/">Have an account?</a>
+        {% else %}
+          <a href="/signup/">No account?</a>
+        {% endif %}
       </div>
     </div>
   </form>

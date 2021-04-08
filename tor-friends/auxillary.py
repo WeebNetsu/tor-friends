@@ -8,7 +8,6 @@ import random
 from collections import OrderedDict
 from flask import flash, session
 
-
 def guest_sign_in() -> None:
     """
     This gives non-signed in users a random session id and the username 'Guest' as well as set their status as guest.

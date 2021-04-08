@@ -3,7 +3,7 @@ from datetime import datetime
 
 from ..auxillary import *
 from ..databases.db import db
-from ..databases.Users_db import Users
+from ..databases.Users_db import *
 
 torrents = read_json_file("torrents")
 
@@ -83,8 +83,9 @@ def change_username():
 
             user = Users.query.get_or_404(session["id"])
             if verify_encrypted_string(user.password, password):
-                user.username = username
-                db.session.commit()  # save all changes to database
+                # user.username = username
+                # db.session.commit()  # save all changes to database
+                update_user_db_field(user.username, username)
             else:
                 return redirect(url_for("user.edit_username", passed=True))
 
@@ -126,8 +127,9 @@ def change_password():
 
             user = Users.query.get_or_404(session["id"])
             if verify_encrypted_string(user.password, old_password):
-                user.password = encrypt_string(new_password)
-                db.session.commit()  # save all changes to database
+                # user.password = encrypt_string(new_password)
+                # db.session.commit()  # save all changes to database
+                update_user_db_field(user.username, encrypt_string(new_password), "password")
             else:
                 return redirect(url_for("user.edit_password", passed=True))
 

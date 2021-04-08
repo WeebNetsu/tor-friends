@@ -54,5 +54,15 @@ form h1 {
   font-family: "Courier New", Courier, monospace;
   margin-bottom: 1rem;
 }
+form h1 a {
+  color: #fff;
+}
+form h1 a:hover {
+  color: #fff;
+}
+form #log_type {
+  text-align: center;
+  font-weight: bold;
+}
 
 /*# sourceMappingURL=login.css.map */

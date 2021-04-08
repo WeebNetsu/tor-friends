@@ -3,7 +3,7 @@ from datetime import datetime
 
 from ..auxillary import *
 from ..databases.db import db
-from ..databases.Users_db import Users
+from ..databases.Users_db import *
 
 torrents = read_json_file("torrents")
 
@@ -24,7 +24,7 @@ def signup():
     if request.args.get('usernameexist'):
         flash("Username already exists.", "error")
 
-    return render_template("signup.html", no_nav=True)
+    return render_template("login.html", no_nav=True, signup=True)
 
 
 @root_page.route("/login/", methods=["GET", "POST"])
@@ -73,6 +73,7 @@ def logout():
 
 @root_page.route("/", methods=["GET", "POST"])
 def index():
+    torrents = read_json_file("torrents")
     rev_torrents = reverse_dict(torrents)
 
     if request.method == "POST":  # if they logged in
@@ -92,6 +93,8 @@ def index():
             session["username"] = user.username
             if user.mod_:
                 session["mod"] = user.mod_
+
+            update_user_db_field(user.username, datetime.today(), "date_accessed")
 
             res = make_response(render_template("index.html", torrents=rev_torrents, session=[
                                 session], rsc=remove_special_characters))

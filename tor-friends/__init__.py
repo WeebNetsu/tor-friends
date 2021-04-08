@@ -10,7 +10,7 @@ from .routes.user import user_page
 from .routes.root import root_page
 
 app = Flask(__name__)
-test_env = False  # if i'm using a test environment
+test_env = True  # if i'm using a test environment
 
 with app.open_resource("static/json/config.json", 'r') as json_data:
     config_data = json.load(json_data)
